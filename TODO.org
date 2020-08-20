@@ -1,0 +1,11 @@
+* Mads
+
+ - [ ] Implement =as_sparr.array= in cpp
+ - [X] Implement =as_sparr.data.frame= in R
+ - [ ] Implement =as_array.sparr= in cpp
+ - [X] Implement =merge_disjoint_=
+ - [ ] Implement other binary ops like =+= and =-=.
+ - [X] Implement =marginalze_=
+ - [ ] Implement =as_cpt.sparr= (or =to_cpt= ?)
+ - [ ] =max, min, sum, which.min, which.max, print etc.=
+ - [ ] Also implement =`[`=  so we can get values by =arr[c("x1", "y2")]= etc.?
