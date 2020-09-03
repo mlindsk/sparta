@@ -2,3 +2,4 @@
 TODO.org
 Makefile
 ^LICENSE\.md$
+^\.github$
