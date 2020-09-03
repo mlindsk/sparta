@@ -1,14 +1,12 @@
 #ifndef SETOPS_H
 #define SETOPS_H
 
-#include "sparr_types.h"
+#include "sparta_types.h"
 
-using vs = std::vector<std::string>;
-
-vs   set_intersect(vs v1, vs v2);
-vs   set_diff(vs v1, vs v2);
-bool set_issubeq(vs& a, vs& b);
-bool set_in(std::string& a, vs& b);
-bool set_int(int a, std::vector<int>& b);
+vec_str   set_intersect(vec_str v1, vec_str v2);
+vec_str   set_diff(vec_str v1, vec_str v2);
+bool set_issubeq(vec_str& a, vec_str& b);
+bool set_in(std::string& a, vec_str& b);
+// bool set_int(int a, std::vector<int>& b);
 
 #endif

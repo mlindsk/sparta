@@ -1,74 +1,177 @@
-as_sparr <- function(x) UseMethod(x)
+#' As sparse table
+#'
+#' Turn an array-like object or a data.frame into a sparse representation
+#'
+#' @param x array-like object or a data.frame
+#' @return A sparta object
+#' @seealso \code{\link{as_array}}
+#' @examples
+#'
+#' # ----------
+#' # Example 1)
+#' # ----------
+#' 
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' as_sparta(x)
+#'
+#' # ----------
+#' # Example 2)
+#' # ----------
+#' 
+#' y   <- mtcars[, c("gear", "carb")]
+#' y[] <- lapply(y, as.character)
+#'
+#' as_sparta(y)
+#' 
+#' @rdname as_sparta
+#' @export
+as_sparta <- function(x) UseMethod("as_sparta")
 
-as_sparr.array <- function(x) {
-  # TODO: Convert to cpp: as_sparse_array_.cpp
-  
-  # x: array-like type. See jti:::.allowed_cpt_classes() (minus sptable)
-
-  # TODO: Make a getter `[` for `sparse` object. Otherwise, the attributes
-  # vanishes when `[` is dispatched on to the matrix class
-
-  # TODO: Handle one-dimensional arrays (vectors): jti::asia2[[1]]
-  ## if (length(dimnames(x)) == 1L) {
-  ##   stop("one-dimensional arrays cannot be converted at the moment")
-  ## }
-  
+#' @rdname as_sparta
+#' @export
+as_sparta.array <- function(x) {
   if (!is_named_list(dimnames(x))) stop("some dimensions are not named properly")
-
-  dims  <- .map_int(dimnames(x), function(z) length(z))
-  ndims <- length(dims)
-  nvals <- length(x)
-  non_zeroes <- which(x != 0L)
-  
-  sparr <- matrix(
-    nrow = length(dims) + 1L, # 1L is the value row
-    ncol = length(non_zeroes)
-  )
-
-  cell <- rep(1, ndims)
-  non_zero_counter <- 1L
-  
-  for (i in 1:nvals) {
-    ival <- x[matrix(cell, nrow = 1L)]
-    if (ival != 0L) {
-      sparr[, non_zero_counter] <- c(cell, ival)
-      non_zero_counter <- non_zero_counter + 1L
-    }
-    # TODO: Remove dependence when as_sparse is converted to cpp
-    cell <- gRbase::next_cell(cell, dims)
-  }
-
-  vals <- sparr[nrow(sparr), ]
-  
-  sparr <- structure(
-    sparr[-nrow(sparr), , drop = FALSE],
+  dim  <- .map_int(dimnames(x), function(z) length(z))
+  out <- as_sparta_(x, dim)
+  sparta <- structure(
+    out[[1]],
     dim_names = dimnames(x),
-    class = c("sparr", class(sparr))
-  )
-
-  storage.mode(sparr) = "integer"
-  attr(sparr, "vals") <- vals
-  sparr
+    class = c("sparta", "matrix")
+  )  
+  storage.mode(sparta) = "integer"
+  attr(sparta, "vals") <- out[[2]]
+  sparta
 }
 
+#' @rdname as_sparta
+#' @export
+as_sparta.matrix <- as_sparta.array
 
-as_sparr.data.frame <- function(x) {
-  # Convert to as_sparse_data_frame_.cpp
+#' @rdname as_sparta
+#' @export
+as_sparta.sparta <- function(x) x
+
+#' @rdname as_sparta
+#' @export
+as_sparta.data.frame <- function(x) {
+  if (!all(lapply(x, class) == "character")) {
+     stop("all varibles must be of class 'character'", call. = FALSE)
+  }
   arr <- array(0L,
     dim =  .map_int(x, function(z) length(unique(z))),
     dimnames = lapply(x, unique)
   )
-  
   for (k in 1:nrow(x)) {
     idx <- as.matrix(x[k, ], nrow = 1L)
     arr[idx] <- arr[idx] + 1L
-  }
-  
-  as_sparr.array(arr)
+  }  
+  as_sparta.array(arr)
 }
 
-## x <- as_sparr.data.frame(jti::asia[, 1:7])
-## y <- as_sparr.data.frame(jti::asia[, 2:7])
+#' As array
+#'
+#' Turn a sparse table into an array
+#'
+#' @param x sparta object
+#' @return An array
+#' @seealso \code{\link{as_array}}
+#' @export
+as_array <- function(x) UseMethod("as_array")
 
-## merge(x, y)
-## marginalize(x, c("A", "L", "T"))
+#' @rdname as_array
+#' @export
+as_array.sparta <- function(x) {
+  dim_ <- .map_int(attr(x, "dim_names"), function(z) length(z))
+  arr  <- array(0L, dim = dim_, dimnames = attr(x, "dim_names"))
+  for (j in 1:ncol(x)) {
+    colj <- matrix(x[, j], nrow = 1L)
+    arr[colj] <- attr(x, "vals")[j]
+  }
+  arr
+}
+
+
+#' As cpt
+#'
+#' Turn a sparta into a conditional probability table
+#'
+#' @param x sparta object
+#' @param y the conditioning variables
+#' @examples
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' sx <- as_sparta(x)
+#'
+#' # A joint probability table p(a, b, c)
+#' as_cpt(sx, character(0)) # the same as normalize
+#' normalize(sx)
+#'
+#' # A conditional probability table p(a, c | b)
+#' as_cpt(sx, "b")
+#' 
+#' @export
+as_cpt <- function(x, y) UseMethod("as_cpt")
+
+
+#' @rdname as_cpt
+#' @export
+as_cpt.sparta <- function(x, y) {
+
+  if (!inherits(y, "character")) stop("y must be a character")
+  if (eq_empt_chr(y)) return(normalize(x))
+  
+  cpt <- as_cpt_(x,
+    attr(x, "vals"),
+    names(attr(x, "dim_names")),
+    y
+  )
+  sparta <- structure(
+    cpt[[1]],
+    dim_names = attr(x, "dim_names"),
+    class = c("sparta", "matrix")
+  )  
+  storage.mode(sparta) = "integer"
+  attr(sparta, "vals") <- cpt[[2]]
+  sparta
+}
+
+#' Sparse unity table
+#'
+#' Construct a sparse table of ones
+#'
+#' @param dim_names A named list of discrete levels
+#' @return A sparta object
+#' @examples
+#' sparta_unity(list(a = c("a1", "a2"), b = c("b1", "b2")))
+#' @export
+sparta_unity <- function(dim_names) {
+  dim_ <- .map_int(dim_names, length)
+  utab <- array(1L, dim_, dim_names)
+  as_sparta(utab)
+}
+
+#' Classes that can be converted to sparta
+#'
+#' A non-argument function, that outputs the classes that can be converted to sparta
+#' 
+#' @export
+allowed_class_to_sparta <- function() {
+  c(.map_chr(utils::methods("as_sparta"), function(generic) sub("as_sparta.", "", generic)))  
+}

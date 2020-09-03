@@ -25,7 +25,7 @@ install:
 	Rscript -e "devtools::install()"
 
 test:
-	Rscript -e "devtools::load_all(); tinytest::test_all('.')"
+	Rscript -e "devtools::load_all(); tinytest::test_all('.', color = TRUE)"
 
 readme:
 	Rscript -e "rmarkdown::render('README.Rmd')"
