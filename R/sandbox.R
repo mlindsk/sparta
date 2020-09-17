@@ -1,31 +1,52 @@
-## Rcpp::sourceCpp("src/marginalize.cpp")
+## Rcpp::sourceCpp("src/merge.cpp")
 
 ## x <- array(
-##   c(1,0,0,2,3,4,0,0, 1,0,0,2,3,4,0,0),
-##   dim = c(2,2,2,2),
+##   c(1,0,0,2,3,4,0,0),
+##   dim = c(2,2,2),
 ##   dimnames = list(
 ##     a = c("a1", "a2"),
 ##     b = c("b1", "b2"),
-##     c = c("c1", "c2"),
-##     d = c("d1", "d2")
+##     c = c("c1", "c2")
 ##   )
 ## )
 
 ## y <- array(
-##   c(1,3,0,1,2),
-##   dim = c(2, 3),
+##   c(1,3,0,1,2,2,1,0,
+##     1,3,0,1,2,2,1,0,
+##     1,3,0,1,2,2,1,0),
+##   dim = c(2,2,2, 3),
 ##   dimnames = list(
+##     b = c("b1", "b2"),
 ##     d = c("d1", "d2"),
+##     a = c("a1", "a2"),
 ##     e = c("e1", "e2", "e3")
 ##   )
 ## )
 
 ## sx <- as_sparta(x)
-## marginalize(sx, "a", FALSE)
-
 ## sy <- as_sparta(y)
 
-## merge(sx, sy)
+
+## microbenchmark::microbenchmark(
+##   merge_(
+##     sx,
+##     sy,
+##     vals(sx),
+##     vals(sy),
+##     names(sx),
+##     names(sy)
+##   ),
+##   merge2_(
+##     sx,
+##     sy,
+##     vals(sx),
+##     vals(sy),
+##     names(sx),
+##     names(sy)
+##   ),
+##   times = 10
+## )
+
 
 ## marginalize(sx, c("a",  "b", "c"))
 
@@ -65,11 +86,11 @@
 #        SPARSE EXAMPLES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## ndims <- 7L
-## nlvls <- 3L
+## ndims <- 10L
+## nlvls <- 4L
 ## dims  <- rep(nlvls, ndims)
 ## n     <- prod(dims)
-## sparsity <- 0.9
+## sparsity <- 0.7
 
 ## x <- array(
 ##   sample(c(0:1), n, TRUE, c(sparsity, 1 - sparsity)),
@@ -88,6 +109,15 @@
 ##   dimnames = structure(
 ##     replicate(ndims, letters[1:nlvls], FALSE),
 ##     names = LETTERS[offset:(ndims + offset -1L)]
+##   )
+## )
+
+## y <- array(
+##   sample(c(0:1), n, TRUE, c(sparsity, 1 - sparsity)),
+##   dim = c(2, 2, 2, 2),
+##   dimnames = structure(
+##     replicate(4, c("a", "b"), FALSE),
+##     names = c("A", "B", "Q", "Z")
 ##   )
 ## )
 
@@ -128,7 +158,6 @@
 ##   merge(sx, sy),
 ##   times = 5
 ## )
-
 
 ## x <- array(
 ##   c(1,0,0,2,3,4,0,0, 1,0,0,2,3,4,0,0),
@@ -371,3 +400,91 @@
 ## )
 
 ## Rcpp::sourceCpp("../src/marginalize.cpp")
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                   UNIT TABLE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## x <- array(
+##   c(1,0,0,2,3,4,0,0, 1,0,0,2,3,4,0,0),
+##   dim = c(2,2,2,2),
+##   dimnames = list(
+##     a = c("a1", "a2"),
+##     b = c("b1", "b2"),
+##     c = c("c1", "c2"),
+##     d = c("d1", "d2")
+##   )
+## )
+
+## sx   <- as_sparta(x)
+
+## sy <- sparta_unity_struct(
+##   list(
+##     c = c("c1", "c2"),
+##     a = c("a1", "a2"),
+##     e = c("e1", "e2"),
+##     f = c("f1", "f2")
+##   )
+## )
+
+## sy <- sparta_unity_struct(
+##   list(
+##     l = c("e1", "e2"),
+##     s = c("f1", "f2"),
+##     e = c("f1", "f2"),
+##     r = c("f1", "f2"),
+##     q = c("f1", "f2")
+##   )
+## )
+
+## dimy <- .map_int(dim_names(sy), length)
+
+## merge_unity_(
+##   sx,
+##   vals(sx),
+##   names(sx),
+##   names(sy),
+##   dimy,
+##   '/',
+##   FALSE # only a problem for '/'!
+## )
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                       LINKS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## l <- readRDS("../../../../sandbox/r/link/link.rds")
+
+## cpts <- lapply(l, function(x) {
+##   xp <- x$prob
+##   class(xp) <- c("array", class(xp))
+##   if (length(dim(xp)) == 1L) {
+##     xn <- structure(list(dimnames(xp)[[1]]), names = x$node)
+##     dimnames(xp) <- xn
+##   }
+##   if (!sparta:::is_named_list(dimnames(xp))) browser()
+##   xp
+## })
+
+## cl <- jti::cpt_list(cpts)
+## cp <- jti::compile(cl, save_graph = TRUE)
+## g  <- jti::dag(cp)
+## plot(g)
+
+## Rcpp::sourceCpp("../src/merge.cpp")
+
+## mult(cp$charge$C[[59]], cp$charge$C[[60]]) #cp$charge$C[[60]])
+
+## plot(g, vertex.size = 0, vertex.label = NA)
+## mg <- moralize(g)
+## plot(mg, vertex.size = 0, vertex.label = NA)
+## mtg <- triangulate(mg)
+## plot(mtg, vertex.size = 0, vertex.label = NA)
+
+## attr(cp, "cliques")
+## .map_int(cp$cliques, length)
+## cp$cliques$C55
+
+## .map_int(cp$charge$C, function(x) length(names(x)))
+# sparta::mult(cp$charge$C[[59]], cp$charge$C[[60]])
+## cp$charge$C[[60]]

@@ -75,4 +75,15 @@ ds2  <- as_sparta(d2)
 mult(ds1, ds2)
 div(ds1, ds2)
 
+# ----------
+# Example 3)
+# ----------
+
+# Useful in connection with the junction tree algorithm where
+# some clique potentials/tables may be initialized as the identity table
+
+su <- sparta_unity_struct(dim_names(sy))
+mult(sx, su)
+div(su, sx)
+
 }

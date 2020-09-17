@@ -1,3 +1,45 @@
+#' Classes that can be converted to sparta
+#'
+#' A non-argument function, that outputs the classes that can be converted to sparta
+#' 
+#' @export
+allowed_class_to_sparta <- function() {
+  c(.map_chr(utils::methods("as_sparta"), function(generic) sub("as_sparta.", "", generic)))  
+}
+
+#' Sparse unity table
+#'
+#' Construct a sparse table of ones
+#'
+#' @param dim_names A named list of discrete levels
+#' @return A sparta object
+#' @examples
+#' sparta_unity(list(a = c("a1", "a2"), b = c("b1", "b2")))
+#' @export
+sparta_unity <- function(dim_names) {
+  dim_ <- .map_int(dim_names, length)
+  utab <- array(1L, dim_, dim_names)
+  as_sparta(utab)
+}
+
+#' Sparse unity table
+#'
+#' Construct a sparse table of ones
+#'
+#' @param dim_names A named list of discrete levels
+#' @return A sparta object
+#' @examples
+#' sparta_unity_struct(list(a = c("a1", "a2"), b = c("b1", "b2")))
+#' @export
+sparta_unity_struct <- function(dim_names) {
+  structure(
+    matrix(nrow = 0L, ncol = 0L), # Is there a better object for this? Unfortunately not NULL.
+    vals = vector("numeric", length = 0L), # Is this the best representation? Remove the vals?
+    dim_names = dim_names,
+    class = c("sparta_unity", "sparta", "matrix")
+  )
+}
+
 #' Construct sparta object
 #'
 #' Helper function to construct a sparta object with given values and dim names
@@ -8,14 +50,11 @@
 #' @return A sparta object
 #' @export
 sparta_struct <- function(x, vals, dim_names) {
-
   cond <- inherits(x, "matrix") &&
     inherits(vals, "numeric")   &&
     ncol(x) == length(vals)     &&
     length(dim_names) == nrow(x)
-  
   stopifnot(cond)
-  
   storage.mode(x) <- "integer"
   structure(
     x,
@@ -52,6 +91,7 @@ get_val <- function(x, y) UseMethod("get_val")
 #' @rdname get_val
 #' @export
 get_val.sparta <- function(x, y) {
+  if (inherits(x, "sparta_unity")) stop("x is a 'sparta_unity' table with no values")
   if (is.null(names(y)) && length(y) != attr(x, "dim_names")) {
     stop("y must have names corresponding to the respective variables", call. = TRUE)
   }
@@ -68,6 +108,75 @@ get_val.sparta <- function(x, y) {
     return(attr(x, "vals")[which_idx])
   }
 }
+
+#' Sparta values
+#'
+#' Getter method for sparta values
+#' 
+#' @param x sparta object
+#' @export
+vals <- function(x) UseMethod("vals")
+
+#' @rdname vals
+#' @export
+vals.sparta <- function(x) attr(x, "vals")
+
+#' Sparta dimension names
+#'
+#' Getter method for sparta dimension names
+#' 
+#' @param x sparta object
+#' @export
+dim_names <- function(x) UseMethod("dim_names")
+
+#' @rdname dim_names
+#' @export
+dim_names.sparta <- function(x) attr(x, "dim_names")
+
+
+#' Sparta names
+#'
+#' Getter method for sparta variable names
+#' 
+#' @param x sparta object
+#' @export
+names.sparta <- function(x) names(attr(x, "dim_names"))
+
+
+#' Print
+#'
+#' Print method for sparta objects
+#' 
+#' @param x sparta object
+#' @param ... For S3 compatability. Not used.
+#' @export
+print.sparta <- function(x, ...) {
+  if (inherits(x, "sparta_unity")) {
+    cat(" <sparta_unity>\n")
+  } else {
+    cat(" <cells>")
+    prmatrix(
+      x,
+      rowlab = names(attr(x, "dim_names")),
+      collab = rep("", ncol(x))
+    )
+    cat("\n <vals>")
+    prmatrix(
+      matrix(attr(x, "vals"), nrow = 1L),
+      rowlab = "",
+      collab = rep("", length(attr(x, "vals")))
+    )
+  }
+  cat("\n <dim_names>\n")
+  dn  <- attr(x, "dim_names")
+  ndn <- names(dn)
+  for (k in 1:length(dn)) {
+    dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
+    cat(dn_k, "\n")
+  }
+}
+
+# TODO: Make sparta_unity functions for all the below functions? Do we really care?
 
 #' Normalize
 

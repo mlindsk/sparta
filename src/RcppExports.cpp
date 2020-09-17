@@ -65,12 +65,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// merge_unity_
+Rcpp::List merge_unity_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str yvar, vec_int ydim, bool reciprocal);
+RcppExport SEXP _sparta_merge_unity_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP yvarSEXP, SEXP ydimSEXP, SEXP reciprocalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::Mat<short>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< vec_dbl& >::type xval(xvalSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type yvar(yvarSEXP);
+    Rcpp::traits::input_parameter< vec_int >::type ydim(ydimSEXP);
+    Rcpp::traits::input_parameter< bool >::type reciprocal(reciprocalSEXP);
+    rcpp_result_gen = Rcpp::wrap(merge_unity_(x, xval, xvar, yvar, ydim, reciprocal));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_sparta_as_sparta_", (DL_FUNC) &_sparta_as_sparta_, 2},
     {"_sparta_as_cpt_", (DL_FUNC) &_sparta_as_cpt_, 4},
     {"_sparta_marginalize_", (DL_FUNC) &_sparta_marginalize_, 5},
     {"_sparta_merge_", (DL_FUNC) &_sparta_merge_, 7},
+    {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 6},
     {NULL, NULL, 0}
 };
 

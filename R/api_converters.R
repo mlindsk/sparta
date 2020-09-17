@@ -151,27 +151,3 @@ as_cpt.sparta <- function(x, y) {
   attr(sparta, "vals") <- cpt[[2]]
   sparta
 }
-
-#' Sparse unity table
-#'
-#' Construct a sparse table of ones
-#'
-#' @param dim_names A named list of discrete levels
-#' @return A sparta object
-#' @examples
-#' sparta_unity(list(a = c("a1", "a2"), b = c("b1", "b2")))
-#' @export
-sparta_unity <- function(dim_names) {
-  dim_ <- .map_int(dim_names, length)
-  utab <- array(1L, dim_, dim_names)
-  as_sparta(utab)
-}
-
-#' Classes that can be converted to sparta
-#'
-#' A non-argument function, that outputs the classes that can be converted to sparta
-#' 
-#' @export
-allowed_class_to_sparta <- function() {
-  c(.map_chr(utils::methods("as_sparta"), function(generic) sub("as_sparta.", "", generic)))  
-}

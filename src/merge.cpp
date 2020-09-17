@@ -14,6 +14,7 @@ Rcpp::List merge_disjoint_(
   )
 {
 
+  // TODO: Let the following be a macro definition?
   int n_col_x = xval.size();
   int n_col_y = yval.size();
   int n_xvar  = xvar.size();
@@ -43,7 +44,6 @@ Rcpp::List merge_disjoint_(
     	counter_ij += 1;
       }
 
-      // out_val[counter] = xval[i] * yval[j];
       double val_ij = op == "*" ? xval[i] * yval[j] : xval[i] / yval[j];
       out_val[counter] = val_ij;
       out_mat.col(counter) = v;
@@ -67,19 +67,13 @@ Rcpp::List merge_(
   )
 {
 
-  // Determine on the R side:
-  // vec_str ops{"*", "/"}; //, '+', '-'};
-  // bool op_valid = set_in(op, ops);
-  // if (!op_valid) Rcpp::stop("The operator supplied is not valid. Use one of: '*', '/'"); // , '+', '-'.")
-  
-  // TODO: check if x.isempty() || y.isempty() ?
+  // NOTE: The order of the variables in the final output is (xvar, yvar\xvar)
   
   vec_str names_sep = set_intersect(xvar, yvar);
   if (names_sep.size() == 0) return merge_disjoint_(x, y, xval, yval, xvar, yvar); //
   vec_str names_res = set_diff(yvar, names_sep);
 
   int n_sep  = names_sep.size();
-  // if (n_sep == xvar.size()) Rcpp::stop("The procedure is not yet implemented for identical tables");
   int n_res  = names_res.size();
   int n_xvar = xvar.size();
   int n_yvar = yvar.size();
@@ -112,27 +106,9 @@ Rcpp::List merge_(
   
   arma::Mat<short> x_sub_sep = x.rows(arma_rowidx_sep_x);
   arma::Mat<short> y_sub_sep = y.rows(arma_rowidx_sep_y);
-    
+
   umap_str_int x_sep_idx_map = paste_cols(x_sub_sep);
   umap_str_int y_sep_idx_map = paste_cols(y_sub_sep);
-
-  // for (auto & e : x_sep_idx_map) {
-  //   std::cout << e.first << " : ";
-  //   for (auto & e : e.second) {
-  //     std::cout << e << ", ";
-  //   }
-  //   std::cout << "\n";
-  // }
-
-  // std::cout << "\n";
-
-  // for (auto & e : y_sep_idx_map) {
-  //   std::cout << e.first << " : ";
-  //   for (auto & e : e.second) {
-  //     std::cout << e << ", ";
-  //   }
-  //   std::cout << "\n";
-  // }
   
   // Find the total number of columns in the final sparse matrix
   std::size_t n_cols_out = 0;
@@ -150,7 +126,6 @@ Rcpp::List merge_(
   
   std::size_t counter = 0;
 
-  // TODO: Loop over the intersection instead. If x is large, this is slow...
   for (auto & e : x_sep_idx_map) {
     auto key = e.first;
     auto key_in_y_sep = y_sep_idx_map.find(key);
@@ -187,5 +162,71 @@ Rcpp::List merge_(
       }
     }
   }
+  return Rcpp::List::create(out_mat, out_val);
+}
+
+
+// [[Rcpp::export]]
+Rcpp::List merge_unity_(
+  arma::Mat<short>& x,
+  vec_dbl& xval,
+  vec_str xvar,
+  vec_str yvar,
+  vec_int ydim, 
+  bool reciprocal = false
+  )
+{
+  
+  vec_str names_sep = set_intersect(xvar, yvar);
+  // if (names_sep.size() == 0) return merge_unity_disjoint_(...); //
+  vec_str names_res = set_diff(yvar, names_sep);
+
+  int n_res  = names_res.size();
+  int n_xvar = xvar.size();
+  int n_xval = xval.size();
+  int n_joint_variables = n_xvar + n_res;
+  
+  vec_int rowidx_res_y(n_res);
+  for (int i = 0; i < n_res; i++) {
+    auto it = std::find(yvar.begin(), yvar.end(), names_res[i]);
+    int idx = std::distance(yvar.begin(), it);
+    rowidx_res_y[i] = idx;
+  }
+  
+  vec_int ydim_res = std_sub_vec(ydim, rowidx_res_y);
+  std::vector<arma::Col<short>> all_res_y_cells = all_cells_(ydim_res);
+  int n_all_res_y_cells = all_res_y_cells.size();
+
+  std::size_t n_cols_out =  n_xval * n_all_res_y_cells;
+  arma::Mat<short> out_mat(n_joint_variables, n_cols_out);
+  vec_dbl out_val(n_cols_out);
+
+  std::size_t counter = 0;
+  for (int i = 0; i < n_xval; i++) {
+
+    for (int j = 0; j < n_all_res_y_cells; j++) {
+
+      arma::Col<short> v(n_joint_variables);
+      arma::Col<short> xcoli= x.col(i);
+      arma::Col<short> res_cell = all_res_y_cells[j];
+
+      int counter_ij = 0;
+      
+      for (int k = 0; k < n_xvar; k++) {
+  	v[counter_ij] = xcoli[k];
+	counter_ij ++;
+      }
+      
+      for (int k = 0; k < n_res; k++) {
+  	v[counter_ij] = res_cell[k];
+	counter_ij ++;
+      }
+
+      out_mat.col(counter) = v;
+      out_val[counter] = reciprocal ? 1 / xval[i] : xval[i];
+      counter ++;
+    }
+  }
+  
   return Rcpp::List::create(out_mat, out_val);
 }
