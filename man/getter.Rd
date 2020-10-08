@@ -3,15 +3,24 @@
 \name{vals}
 \alias{vals}
 \alias{vals.sparta}
-\title{Sparta values}
+\alias{dim_names}
+\alias{dim_names.sparta}
+\alias{names.sparta}
+\title{Sparta getters}
 \usage{
 vals(x)
 
 \method{vals}{sparta}(x)
+
+dim_names(x)
+
+\method{dim_names}{sparta}(x)
+
+\method{names}{sparta}(x)
 }
 \arguments{
 \item{x}{sparta object}
 }
 \description{
-Getter method for sparta values
+Getter methods for sparta objects
 }

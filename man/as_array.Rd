@@ -18,6 +18,19 @@ An array
 \description{
 Turn a sparse table into an array
 }
+\examples{
+x <- array(
+  c(1,0,0,2,3,4,0,0),
+  dim = c(2,2,2),
+  dimnames = list(
+    a = c("a1", "a2"),
+    b = c("b1", "b2"),
+    c = c("c1", "c2")
+  )
+)
+
+as_array(as_sparta(x))
+}
 \seealso{
 \code{\link{as_array}}
 }

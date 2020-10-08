@@ -31,10 +31,14 @@ x <- array(
 sx <- as_sparta(x)
 
 # A joint probability table p(a, b, c)
-as_cpt(sx, character(0)) # the same as normalize
+as_cpt(sx, character(0))
+# the same as normalize
 normalize(sx)
 
 # A conditional probability table p(a, c | b)
-as_cpt(sx, "b")
+pacb <- as_cpt(sx, "b")
+
+# The probability distribution when b = b1
+slice(pacb, c(b = "b1"))
 
 }

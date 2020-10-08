@@ -3,7 +3,7 @@
 \name{get_val}
 \alias{get_val}
 \alias{get_val.sparta}
-\title{Find value}
+\title{Get value}
 \usage{
 get_val(x, y)
 
@@ -15,7 +15,7 @@ get_val(x, y)
 \item{y}{named character vector}
 }
 \description{
-Find the value corresponding the the configuration in y
+Find the value corresponding to the configuration in y
 }
 \examples{
 x <- array(

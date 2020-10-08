@@ -19,3 +19,17 @@ A sparta object
 \description{
 Helper function to construct a sparta object with given values and dim names
 }
+\examples{
+x <- array(
+  c(1,0,0,2,3,4,0,0),
+  dim = c(2,2,2),
+  dimnames = list(
+    a = c("a1", "a2"),
+    b = c("b1", "b2"),
+    c = c("c1", "c2")
+  )
+)
+
+sx <- as_sparta(x)
+sparta_struct(sx, vals(sx), dim_names(sx))
+}

@@ -7,5 +7,6 @@
 allowed_class_to_sparta()
 }
 \description{
-A non-argument function, that outputs the classes that can be converted to sparta
+A non-argument function, that outputs the classes
+that can be converted to a sparta object
 }
