@@ -1,4 +1,4 @@
-## Rcpp::sourceCpp("src/merge.cpp")
+## Rcpp::sourceCpp("../src/slice.cpp")
 
 ## x <- array(
 ##   c(1,0,0,2,3,4,0,0),
@@ -26,6 +26,21 @@
 ## sx <- as_sparta(x)
 ## sy <- as_sparta(y)
 
+## slice_(sy, vals(sy), dim_names(sy), c("a", "e"), c("a2", "e3"))
+## slice(sx, c(a = "a1", b = "b1"))
+
+## slice <- function(x, s) UseMethod("slice")
+
+## slice.sparta <- function(x, s) {
+##   if (inherits(x, "sparta_unity")) {
+##     stop("A sparta_unity cannot be sliced. Try using 'sparta_ones'.")
+##   }
+##   if (is.null(names(s))) {
+##     stop("s must be a named character vector", call. = FALSE)
+##   }
+##   sp <- slice_(x, vals(x), dim_names(x), names(s), s)
+##   sparta_struct(sp[[1]], sp[[2]], dim_names(x))
+## }
 
 ## microbenchmark::microbenchmark(
 ##   merge_(

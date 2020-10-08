@@ -80,12 +80,10 @@ expect_error(
   marg(msxy1, c("z"))
 )
 
-# We produce an error when marginalizing out all vaiables
-# - ofcourse this produce a '1L' theoretically
-# - but we do not want to fool the user to think that
-# - the resulting object is of class sparta
-expect_error(
-  marg(msxy1, c("a", "b", "c", "d", "e"))
+# marginalizing out all vaiables
+expect_equal(
+  marg(msxy1, c("a", "b", "c", "d", "e")),
+  sum(msxy1)
 )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -19,7 +19,7 @@ Rcpp::List marginalize_(
   int n_xvar  = xvar.size();
   int n_y     = y.size();
   vec_str xvar_without_y = set_diff(xvar, y);
-  int n_xvar_without_y   = n_xvar - n_y; // TODO: Test for y.size() == 0 and just return x?
+  int n_xvar_without_y   = n_xvar - n_y;
   vec_int rowidx_xvar_without_y(n_xvar_without_y);
 
   for (int i = 0; i < n_xvar_without_y; i++) {

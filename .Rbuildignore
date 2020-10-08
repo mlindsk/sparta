@@ -3,3 +3,7 @@ TODO.org
 Makefile
 ^LICENSE\.md$
 ^\.github$
+R/sandbox\.R
+src/GTAGS
+src/GRTAGS
+src/GPATH

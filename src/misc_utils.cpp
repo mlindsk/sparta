@@ -10,6 +10,16 @@ vec_int std_sub_vec(vec_int& v, vec_int& indices) {
   return sub_vec;
 }
 
+vec_dbl std_sub_vec(vec_dbl& v, vec_int& indices) {
+  int ni = indices.size();
+  vec_dbl sub_vec(ni);
+  for (int i = 0; i < ni; i++) {
+    sub_vec[i] = v[indices[i]];
+  }
+  return sub_vec;
+}
+
+
 umap_str_int paste_cols(arma::Mat<short>& A) {
   int N = A.n_cols;
   umap_str_int out(N);

@@ -7,16 +7,16 @@ allowed_class_to_sparta <- function() {
   c(.map_chr(utils::methods("as_sparta"), function(generic) sub("as_sparta.", "", generic)))  
 }
 
-#' Sparse unity table
+#' Sparta Ones
 #'
-#' Construct a sparse table of ones
+#' Construct a sparta object filled with ones
 #'
 #' @param dim_names A named list of discrete levels
 #' @return A sparta object
 #' @examples
-#' sparta_unity(list(a = c("a1", "a2"), b = c("b1", "b2")))
+#' sparta_ones(list(a = c("a1", "a2"), b = c("b1", "b2")))
 #' @export
-sparta_unity <- function(dim_names) {
+sparta_ones <- function(dim_names) {
   dim_ <- .map_int(dim_names, length)
   utab <- array(1L, dim_, dim_names)
   as_sparta(utab)
@@ -33,8 +33,8 @@ sparta_unity <- function(dim_names) {
 #' @export
 sparta_unity_struct <- function(dim_names) {
   structure(
-    matrix(nrow = 0L, ncol = 0L), # Is there a better object for this? Unfortunately not NULL.
-    vals = vector("numeric", length = 0L), # Is this the best representation? Remove the vals?
+    matrix(nrow = 0L, ncol = 0L), # A better object for this? Unfortunately not NULL.
+    vals = vector("numeric", length = 0L), # A netter representation?
     dim_names = dim_names,
     class = c("sparta_unity", "sparta", "matrix")
   )
@@ -91,14 +91,18 @@ get_val <- function(x, y) UseMethod("get_val")
 #' @rdname get_val
 #' @export
 get_val.sparta <- function(x, y) {
-  if (inherits(x, "sparta_unity")) stop("x is a 'sparta_unity' table with no values")
-  if (is.null(names(y)) && length(y) != attr(x, "dim_names")) {
+  
+  if (is.null(names(y)) || (length(y) != length(attr(x, "dim_names")))) {
     stop("y must have names corresponding to the respective variables", call. = TRUE)
   }
-  # TODO: Check if y is allowed by matching against attr(x, "dimnames")?
+  
   x_dim_names <- attr(x, "dim_names")
   y         <- y[names(x_dim_names)]
   idx       <- mapply(match, y, x_dim_names)
+  
+  if (anyNA(idx)) stop("some values of y are not valid.", call. = FALSE)
+  if (inherits(x, "sparta_unity")) return(1L)
+  
   idx_str   <- paste0(idx, collapse = "")
   idx_x     <- apply(x, 2L, paste0, collapse = "")
   which_idx <- match(idx_str, idx_x)
@@ -176,8 +180,6 @@ print.sparta <- function(x, ...) {
   }
 }
 
-# TODO: Make sparta_unity functions for all the below functions? Do we really care?
-
 #' Normalize
 
 #' @param x sparta
@@ -202,6 +204,9 @@ normalize <- function(x) UseMethod("normalize")
 #' @rdname normalize
 #' @export
 normalize.sparta <- function(x) {
+  if (inherits(x, "sparta_unity")) {
+    stop("a sparta_unity cannot be normalize. see 'sparta_ones'")
+  }
   attr(x, "vals") <- attr(x, "vals") / sum(attr(x, "vals"))
   x
 }
@@ -214,18 +219,24 @@ normalize.sparta <- function(x) {
 #' @rdname vec-ops
 #' @export
 sum.sparta <- function(x, ...) {
+  if (inherits(x, "sparta_unity")) {
+    ncells <- .map_int(dim_names(x), length)
+    return(prod(ncells))
+  }
   sum(attr(x, "vals"))
 }
 
 #' @rdname vec-ops
 #' @export
 max.sparta <- function(x, ...) {
+  if (inherits(x, "sparta_unity")) return(1L)
   max(attr(x, "vals"))
 }
 
 #' @rdname vec-ops
 #' @export
 min.sparta <- function(x, ...) {
+  if (inherits(x, "sparta_unity")) return(1L)
   min(attr(x, "vals"))
 }
 
@@ -236,6 +247,9 @@ which_min_cell <- function(x) UseMethod("which_min")
 #' @rdname vec-ops
 #' @export
 which_min_cell.sparta <- function(x) {
+  if (inherits(x, "sparta_unity")) {
+    return(.map_chr(dim_names(x), function(z) z[1]))
+  }
   idx <- x[, which.min(attr(x, "vals"))]
   mapply(
     function(a, b) a[b],
@@ -251,6 +265,7 @@ which_min_idx <- function(x) UseMethod("which_min_idx")
 #' @rdname vec-ops
 #' @export
 which_min_idx.sparta <- function(x) {
+  if (inherits(x, "sparta_unity")) return(1L)
   which.min(attr(x, "vals"))
 }
 
@@ -261,6 +276,9 @@ which_max_cell <- function(x) UseMethod("which_max_cell")
 #' @rdname vec-ops
 #' @export
 which_max_cell.sparta <- function(x) {
+  if (inherits(x, "sparta_unity")) {
+    return(.map_chr(dim_names(x), function(z) z[1]))
+  }
   idx <- x[, which.max(attr(x, "vals"))]
   mapply(
     function(a, b) a[b],
@@ -276,5 +294,6 @@ which_max_idx <- function(x) UseMethod("which_max_idx")
 #' @rdname vec-ops
 #' @export
 which_max_idx.sparta <- function(x) {
+  if (inherits(x, "sparta_unity")) return(1L)
   which.max(attr(x, "vals"))
 }

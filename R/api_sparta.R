@@ -1,6 +1,6 @@
 #' @title Multiplication and division of sparse tables
 #' @param x sparta object
-#' @param y sparta object
+#' @param y sparta object or scalar
 #' @return A sparta object
 #' @examples
 #'
@@ -55,12 +55,21 @@
 #' # Example 3)
 #' # ----------
 #'
-#' # Useful in connection with the junction tree algorithm where
-#' # some clique potentials/tables may be initialized as the identity table
+#' # Useful in connection to the Junction Tree Algorithm
+#' # where all clique potentials must be intialized
+#' # as the identity table
 #' 
 #' su <- sparta_unity_struct(dim_names(sy))
 #' mult(sx, su)
 #' div(su, sx)
+#'
+#' # ----------
+#' # Example 4)
+#' # ----------
+#' so <- sparta_ones(dim_names(sx))
+#' mult(so, 2)
+#' div(so, -2)
+#' 
 #' 
 #' @rdname merge
 #' @export
@@ -70,12 +79,31 @@ mult <- function(x, y) UseMethod("mult")
 #' @export
 mult.sparta <- function(x, y) {
 
-  if (!inherits(y, "sparta")) stop("y is not of class 'sparta'", call. = FALSE)
-  is_x_unity <- inherits(x, "sparta_unity")
-  is_y_unity <- inherits(y, "sparta_unity")
+  is_y_scalar <- is_scalar(y)
+  
+  if (!inherits(y, "sparta") && !is_y_scalar) {
+    stop("y must be of class 'sparta' or a scalar", call. = FALSE)
+  }
 
+  is_x_unity <- inherits(x, "sparta_unity")
+  
+  if (is_y_scalar) {
+    if (is_x_unity) {
+      stop("A sparta_unity can not be multiplied with a scalar", call. = FALSE)
+    }
+    attr(x, "vals") <- attr(x, "vals") * y
+    return(x)
+  }
+  
+  if (!inherits(y, "sparta")) stop("y is not of class 'sparta'", call. = FALSE)
+
+  is_y_unity <- inherits(y, "sparta_unity")
   dn1 <- attr(x, "dim_names")
   dn2 <- attr(y, "dim_names")
+
+  if (is_x_unity && is_y_unity) {
+    return(sparta_unity_struct(c(dn1, dn2[setdiff(names(dn2), names(dn1))])))
+  }
   
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {
@@ -86,9 +114,7 @@ mult.sparta <- function(x, y) {
       dn1 <- dn2
       dn2 <- dn
       merge_unity_(y, vals(y), names(y), names(x), .map_int(dim_names(x), length))
-    } else {
-      stop("Not yet implemented for two sparta_unity tables.")
-    }
+    } 
   } else {
     merge_(x, y, vals(x), vals(y), names(x), names(y))
   }
@@ -105,12 +131,29 @@ div <- function(x, y) UseMethod("div")
 #' @export
 div.sparta <- function(x, y) {
 
-  if (!inherits(y, "sparta")) stop("y is not of class 'sparta'", call. = FALSE)
-  is_x_unity <- inherits(x, "sparta_unity")
-  is_y_unity <- inherits(y, "sparta_unity")
+  is_y_scalar <- is_scalar(y)
+  
+  if (!inherits(y, "sparta") && !is_y_scalar) {
+    stop("y must be of class 'sparta' or a scalar", call. = FALSE)
+  }
 
+  is_x_unity  <- inherits(x, "sparta_unity")
+  
+  if (is_y_scalar) {
+    if (is_x_unity) {
+      stop("A sparta_unity can not be divided with a scalar", call. = FALSE)
+    }
+    attr(x, "vals") <- attr(x, "vals") / y
+    return(x)
+  }
+
+  is_y_unity <- inherits(y, "sparta_unity")
   dn1 <- attr(x, "dim_names")
   dn2 <- attr(y, "dim_names")
+
+  if (is_x_unity && is_y_unity) {
+    return(sparta_unity_struct(c(dn1, dn2[setdiff(names(dn2), names(dn1))])))
+  }
   
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {
@@ -120,8 +163,6 @@ div.sparta <- function(x, y) {
       dn1 <- dn2
       dn2 <- dn
       merge_unity_(y, vals(y), names(y), names(x), .map_int(dim_names(x), length), TRUE)
-    } else {
-      stop("Not yet implemented for two sparta_unity tables.")
     }
   } else {
     merge_(x, y, vals(x), vals(y), names(x), names(y), "/")
@@ -129,7 +170,6 @@ div.sparta <- function(x, y) {
 
   sparta_struct(m[[1]], m[[2]], c(dn1, dn2[setdiff(names(dn2), names(dn1))]))
 }
-
 
 
 #' Marginalization of sparse tables
@@ -161,15 +201,15 @@ marg <- function(x, y, flow = "sum") UseMethod("marg")
 #' @export
 marg.sparta <- function(x, y, flow = "sum") {
 
-  # TODO: Marginalize a sparta_unity object - do we need it ?
+  if (inherits(x, "sparta_unity")) {
+    stop("A sparta_unity can not be marginalized. If needed, use 'sparta_ones'")
+  }
   
   dnx    <- attr(x, "dim_names")
   xnames <- names(dnx)
 
   if (setequal(xnames, y)) {
-    stop("You can not marginalize all variables out. ",
-      "It is ofcourse theoretically valid and would produce a '1L'.",
-      call. = FALSE)
+    return(sum(x))
   }
 
   if (flow %ni% c("sum", "max")) {
@@ -189,4 +229,49 @@ marg.sparta <- function(x, y, flow = "sum") {
     m[[2]],
     dnx[setdiff(xnames, y)]
   )
+}
+
+
+#' Slice
+#'
+#' Find the slice of a sparse table
+#' 
+#' @param x sparta object
+#' @param s a slice in form of a named character vector
+#' @return A sparta object
+#' @examples
+#'
+#' x <- array(
+#'  c(1,0,0,2,3,4,0,0),
+#'  dim = c(2,2,2),
+#'  dimnames = list(
+#'    a = c("a1", "a2"),
+#'    b = c("b1", "b2"),
+#'    c = c("c1", "c2")
+#'  )
+#' )
+#'
+#' sx <- as_sparta(x)
+#' 
+#' # conditional probability table p(b,c|a)
+#' sx <- as_cpt(sx, "a")
+#'
+#' # the probability distriubtion when 'a' is 'a2' 
+#' sxa2 <- slice(sx, c(a = "a2"))
+#' get_val(sxa2, c(a = "a2", b = "b1", c = "c2"))
+#'
+#' @export
+slice <- function(x, s) UseMethod("slice")
+
+#' @rdname slice
+#' @export
+slice.sparta <- function(x, s) {
+  if (inherits(x, "sparta_unity")) {
+    stop("A sparta_unity cannot be sliced. If needed, use 'sparta_ones'.")
+  }
+  if (is.null(names(s))) {
+    stop("s must be a named character vector", call. = FALSE)
+  }
+  sp <- slice_(x, vals(x), dim_names(x), names(s), s)
+  sparta_struct(sp[[1]], sp[[2]], dim_names(x))
 }

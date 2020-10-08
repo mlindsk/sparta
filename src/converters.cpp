@@ -37,7 +37,7 @@ Rcpp::List as_sparta_(const vec_dbl& arr, const vec_int& dim) {
 Rcpp::List as_cpt_(arma::Mat<short>& x,
 		   vec_dbl& xval,
 		   vec_str& xvar,
-		   vec_str& y
+		   vec_str& y // The conditioning variables
 		   )
 {
 

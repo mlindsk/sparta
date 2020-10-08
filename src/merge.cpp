@@ -14,7 +14,6 @@ Rcpp::List merge_disjoint_(
   )
 {
 
-  // TODO: Let the following be a macro definition?
   int n_col_x = xval.size();
   int n_col_y = yval.size();
   int n_xvar  = xvar.size();
@@ -68,9 +67,9 @@ Rcpp::List merge_(
 {
 
   // NOTE: The order of the variables in the final output is (xvar, yvar\xvar)
-  
+
   vec_str names_sep = set_intersect(xvar, yvar);
-  if (names_sep.size() == 0) return merge_disjoint_(x, y, xval, yval, xvar, yvar); //
+  if (names_sep.size() == 0) return merge_disjoint_(x, y, xval, yval, xvar, yvar);
   vec_str names_res = set_diff(yvar, names_sep);
 
   int n_sep  = names_sep.size();
@@ -178,7 +177,6 @@ Rcpp::List merge_unity_(
 {
   
   vec_str names_sep = set_intersect(xvar, yvar);
-  // if (names_sep.size() == 0) return merge_unity_disjoint_(...); //
   vec_str names_res = set_diff(yvar, names_sep);
 
   int n_res  = names_res.size();

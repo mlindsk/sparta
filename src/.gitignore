@@ -1,4 +1,6 @@
 *.o
 *.so
 *.dll
-old
+GTAGS
+GRTAGS
+GPATH

@@ -29,7 +29,6 @@
 #' 
 #' y   <- mtcars[, c("gear", "carb")]
 #' y[] <- lapply(y, as.character)
-#'
 #' as_sparta(y)
 #' 
 #' @rdname as_sparta
@@ -41,20 +40,17 @@ as_sparta <- function(x) UseMethod("as_sparta")
 as_sparta.array <- function(x) {
   if (!is_named_list(dimnames(x))) stop("some dimensions are not named properly")
   dim  <- .map_int(dimnames(x), function(z) length(z))
-  out <- as_sparta_(x, dim)
-  sparta <- structure(
-    out[[1]],
-    dim_names = dimnames(x),
-    class = c("sparta", "matrix")
-  )  
-  storage.mode(sparta) = "integer"
-  attr(sparta, "vals") <- out[[2]]
-  sparta
+  sp <- as_sparta_(x, dim)
+  sparta_struct(sp[[1]], sp[[2]], dimnames(x))  
 }
 
 #' @rdname as_sparta
 #' @export
 as_sparta.matrix <- as_sparta.array
+
+#' @rdname as_sparta
+#' @export
+as_sparta.table <- as_sparta.array
 
 #' @rdname as_sparta
 #' @export
@@ -66,15 +62,15 @@ as_sparta.data.frame <- function(x) {
   if (!all(lapply(x, class) == "character")) {
      stop("all varibles must be of class 'character'", call. = FALSE)
   }
-  arr <- array(0L,
-    dim =  .map_int(x, function(z) length(unique(z))),
-    dimnames = lapply(x, unique)
-  )
-  for (k in 1:nrow(x)) {
-    idx <- as.matrix(x[k, ], nrow = 1L)
-    arr[idx] <- arr[idx] + 1L
-  }  
-  as_sparta.array(arr)
+  ## arr <- array(0L,
+  ##   dim =  .map_int(x, function(z) length(unique(z))),
+  ##   dimnames = lapply(x, unique)
+  ## )
+  ## for (k in 1:nrow(x)) {
+  ##   idx <- as.matrix(x[k, ], nrow = 1L)
+  ##   arr[idx] <- arr[idx] + 1L
+  ## }  
+  as_sparta(table(x))
 }
 
 #' As array
@@ -134,6 +130,10 @@ as_cpt <- function(x, y) UseMethod("as_cpt")
 #' @export
 as_cpt.sparta <- function(x, y) {
 
+  if(inherits(x, "sparta_unity")) {
+    x <- sparta_ones(dim_names(x))
+  }
+  
   if (!inherits(y, "character")) stop("y must be a character")
   if (eq_empt_chr(y)) return(normalize(x))
   
@@ -142,12 +142,6 @@ as_cpt.sparta <- function(x, y) {
     names(attr(x, "dim_names")),
     y
   )
-  sparta <- structure(
-    cpt[[1]],
-    dim_names = attr(x, "dim_names"),
-    class = c("sparta", "matrix")
-  )  
-  storage.mode(sparta) = "integer"
-  attr(sparta, "vals") <- cpt[[2]]
-  sparta
+
+  sparta_struct(cpt[[1]], cpt[[2]], attr(x, "dim_names"))
 }
