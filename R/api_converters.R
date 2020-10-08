@@ -80,6 +80,18 @@ as_sparta.data.frame <- function(x) {
 #' @param x sparta object
 #' @return An array
 #' @seealso \code{\link{as_array}}
+#' @examples
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' as_array(as_sparta(x))
 #' @export
 as_array <- function(x) UseMethod("as_array")
 
@@ -116,11 +128,15 @@ as_array.sparta <- function(x) {
 #' sx <- as_sparta(x)
 #'
 #' # A joint probability table p(a, b, c)
-#' as_cpt(sx, character(0)) # the same as normalize
+#' as_cpt(sx, character(0))
+#' # the same as normalize
 #' normalize(sx)
 #'
 #' # A conditional probability table p(a, c | b)
-#' as_cpt(sx, "b")
+#' pacb <- as_cpt(sx, "b")
+#'
+#' # The probability distribution when b = b1
+#' slice(pacb, c(b = "b1"))
 #' 
 #' @export
 as_cpt <- function(x, y) UseMethod("as_cpt")

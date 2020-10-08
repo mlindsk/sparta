@@ -1,6 +1,7 @@
 #' Classes that can be converted to sparta
 #'
-#' A non-argument function, that outputs the classes that can be converted to sparta
+#' A non-argument function, that outputs the classes
+#' that can be converted to a sparta object
 #' 
 #' @export
 allowed_class_to_sparta <- function() {
@@ -33,8 +34,8 @@ sparta_ones <- function(dim_names) {
 #' @export
 sparta_unity_struct <- function(dim_names) {
   structure(
-    matrix(nrow = 0L, ncol = 0L), # A better object for this? Unfortunately not NULL.
-    vals = vector("numeric", length = 0L), # A netter representation?
+    matrix(nrow = 0L, ncol = 0L),
+    vals = vector("numeric", length = 0L),
     dim_names = dim_names,
     class = c("sparta_unity", "sparta", "matrix")
   )
@@ -48,6 +49,19 @@ sparta_unity_struct <- function(dim_names) {
 #' @param vals vector of values corresponding to x
 #' @param dim_names a named list
 #' @return A sparta object
+#' @examples
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' sx <- as_sparta(x)
+#' sparta_struct(sx, vals(sx), dim_names(sx))
 #' @export
 sparta_struct <- function(x, vals, dim_names) {
   cond <- inherits(x, "matrix") &&
@@ -65,9 +79,9 @@ sparta_struct <- function(x, vals, dim_names) {
 }
 
 
-#' Find value 
+#' Get value 
 #'
-#' Find the value corresponding the the configuration in y
+#' Find the value corresponding to the configuration in y
 #'
 #' @param x sparta
 #' @param y named character vector
@@ -113,73 +127,6 @@ get_val.sparta <- function(x, y) {
   }
 }
 
-#' Sparta values
-#'
-#' Getter method for sparta values
-#' 
-#' @param x sparta object
-#' @export
-vals <- function(x) UseMethod("vals")
-
-#' @rdname vals
-#' @export
-vals.sparta <- function(x) attr(x, "vals")
-
-#' Sparta dimension names
-#'
-#' Getter method for sparta dimension names
-#' 
-#' @param x sparta object
-#' @export
-dim_names <- function(x) UseMethod("dim_names")
-
-#' @rdname dim_names
-#' @export
-dim_names.sparta <- function(x) attr(x, "dim_names")
-
-
-#' Sparta names
-#'
-#' Getter method for sparta variable names
-#' 
-#' @param x sparta object
-#' @export
-names.sparta <- function(x) names(attr(x, "dim_names"))
-
-
-#' Print
-#'
-#' Print method for sparta objects
-#' 
-#' @param x sparta object
-#' @param ... For S3 compatability. Not used.
-#' @export
-print.sparta <- function(x, ...) {
-  if (inherits(x, "sparta_unity")) {
-    cat(" <sparta_unity>\n")
-  } else {
-    cat(" <cells>")
-    prmatrix(
-      x,
-      rowlab = names(attr(x, "dim_names")),
-      collab = rep("", ncol(x))
-    )
-    cat("\n <vals>")
-    prmatrix(
-      matrix(attr(x, "vals"), nrow = 1L),
-      rowlab = "",
-      collab = rep("", length(attr(x, "vals")))
-    )
-  }
-  cat("\n <dim_names>\n")
-  dn  <- attr(x, "dim_names")
-  ndn <- names(dn)
-  for (k in 1:length(dn)) {
-    dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
-    cat(dn_k, "\n")
-  }
-}
-
 #' Normalize
 
 #' @param x sparta
@@ -210,6 +157,33 @@ normalize.sparta <- function(x) {
   attr(x, "vals") <- attr(x, "vals") / sum(attr(x, "vals"))
   x
 }
+
+#' Sparta getters
+#'
+#' Getter methods for sparta objects
+#' 
+#' @param x sparta object
+
+#' @rdname getter
+#' @export
+vals <- function(x) UseMethod("vals")
+
+#' @rdname getter
+#' @export
+vals.sparta <- function(x) attr(x, "vals")
+
+#' @rdname getter
+#' @export
+dim_names <- function(x) UseMethod("dim_names")
+
+#' @rdname getter
+#' @export
+dim_names.sparta <- function(x) attr(x, "dim_names")
+
+#' @rdname getter
+#' @export
+names.sparta <- function(x) names(attr(x, "dim_names"))
+
 
 #' Vector-like operations on sparta objects
 
@@ -296,4 +270,37 @@ which_max_idx <- function(x) UseMethod("which_max_idx")
 which_max_idx.sparta <- function(x) {
   if (inherits(x, "sparta_unity")) return(1L)
   which.max(attr(x, "vals"))
+}
+
+#' Print
+#'
+#' Print method for sparta objects
+#' 
+#' @param x sparta object
+#' @param ... For S3 compatability. Not used.
+#' @export
+print.sparta <- function(x, ...) {
+  if (inherits(x, "sparta_unity")) {
+    cat(" <sparta_unity>\n")
+  } else {
+    cat(" <cells>")
+    prmatrix(
+      x,
+      rowlab = names(attr(x, "dim_names")),
+      collab = rep("", ncol(x))
+    )
+    cat("\n <vals>")
+    prmatrix(
+      matrix(attr(x, "vals"), nrow = 1L),
+      rowlab = "",
+      collab = rep("", length(attr(x, "vals")))
+    )
+  }
+  cat("\n <dim_names>\n")
+  dn  <- attr(x, "dim_names")
+  ndn <- names(dn)
+  for (k in 1:length(dn)) {
+    dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
+    cat(dn_k, "\n")
+  }
 }
