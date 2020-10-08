@@ -4,6 +4,7 @@
 \alias{as_sparta}
 \alias{as_sparta.array}
 \alias{as_sparta.matrix}
+\alias{as_sparta.table}
 \alias{as_sparta.sparta}
 \alias{as_sparta.data.frame}
 \title{As sparse table}
@@ -13,6 +14,8 @@ as_sparta(x)
 \method{as_sparta}{array}(x)
 
 \method{as_sparta}{matrix}(x)
+
+\method{as_sparta}{table}(x)
 
 \method{as_sparta}{sparta}(x)
 
@@ -51,7 +54,6 @@ as_sparta(x)
 
 y   <- mtcars[, c("gear", "carb")]
 y[] <- lapply(y, as.character)
-
 as_sparta(y)
 
 }
