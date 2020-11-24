@@ -3,19 +3,25 @@
 \name{get_val}
 \alias{get_val}
 \alias{get_val.sparta}
-\title{Get value}
+\alias{get_cell_name}
+\alias{get_cell_name.sparta}
+\title{Get value or cell name}
 \usage{
 get_val(x, y)
 
 \method{get_val}{sparta}(x, y)
+
+get_cell_name(x, y)
+
+\method{get_cell_name}{sparta}(x, y)
 }
 \arguments{
 \item{x}{sparta}
 
-\item{y}{named character vector}
+\item{y}{named character vector or vector of cell indices}
 }
 \description{
-Find the value corresponding to the configuration in y
+Find the value or the name of a cell
 }
 \examples{
 x <- array(
@@ -30,5 +36,5 @@ x <- array(
 
 sx <- as_sparta(x)
 get_val(sx, c(a = "a2", b = "b1", c = "c2"))
-
+get_cell_name(sx, sx[, 4])
 }

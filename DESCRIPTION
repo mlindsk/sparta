@@ -1,14 +1,14 @@
 Package: sparta
 Type: Package
 Title: Sparse Tables
-Version: 0.5.0
-Date: 2020-08-12
+Version: 0.6.1
+Date: 2020-11-24
 Authors@R: 
   c(person(given = "Mads",
            family = "Lindskou",
 	   email = "mads@math.aau.dk",
            role = c("aut", "cre")))
-Description: Fast Multiplication and Division of Sparse Tables.
+Description: Fast Multiplication and Marginalization of Sparse Tables.
 Encoding: UTF-8
 LazyData: true
 License: MIT + file LICENSE

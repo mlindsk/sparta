@@ -62,15 +62,7 @@ as_sparta.data.frame <- function(x) {
   if (!all(lapply(x, class) == "character")) {
      stop("all varibles must be of class 'character'", call. = FALSE)
   }
-  ## arr <- array(0L,
-  ##   dim =  .map_int(x, function(z) length(unique(z))),
-  ##   dimnames = lapply(x, unique)
-  ## )
-  ## for (k in 1:nrow(x)) {
-  ##   idx <- as.matrix(x[k, ], nrow = 1L)
-  ##   arr[idx] <- arr[idx] + 1L
-  ## }  
-  as_sparta(table(x))
+  as_sparta(table(x, dnn = colnames(x)))
 }
 
 #' As array

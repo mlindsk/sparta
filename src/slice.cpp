@@ -36,14 +36,14 @@ Rcpp::List slice_(
     auto it = std::find(dim_names_i.begin(), dim_names_i.end(), slice_cell[i]);
     int d = std::distance(dim_names_i.begin(), it);
     slicing_cell_idx[i] = d + 1;
-  }  
- 
+  }
+
   std::string slicing_cell_idx_pasted = std::to_string(slicing_cell_idx[0]);
   slicing_cell_idx_pasted = std::accumulate(
     std::next(slicing_cell_idx.begin()),
     slicing_cell_idx.end(),
     slicing_cell_idx_pasted,
-    [](std::string i, int j) -> std::string {return i + std::to_string(j);}
+    [](std::string i, int j) -> std::string {return i + ":" + std::to_string(j);}
     );  
 
   arma::uvec arma_rowidx_slice = conv_to<arma::uvec>::from(row_idx_slice);
@@ -53,6 +53,7 @@ Rcpp::List slice_(
   if (x_slice_idx_map.find(slicing_cell_idx_pasted) == x_slice_idx_map.end()) {
     Rcpp::stop("cannot slice on a cell that is not present");
     // This would lead to a zero probability any way!
+    // return Rcpp::List::create(x, xval);
   }
   
   vec_int keep_cols = x_slice_idx_map[slicing_cell_idx_pasted];  

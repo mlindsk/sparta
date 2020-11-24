@@ -101,12 +101,11 @@
 #        SPARSE EXAMPLES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## ndims <- 10L
-## nlvls <- 4L
+## ndims <- 3L
+## nlvls <- 2L
 ## dims  <- rep(nlvls, ndims)
 ## n     <- prod(dims)
 ## sparsity <- 0.7
-
 ## x <- array(
 ##   sample(c(0:1), n, TRUE, c(sparsity, 1 - sparsity)),
 ##   dim = dims,
@@ -115,6 +114,46 @@
 ##     names = LETTERS[1:ndims]
 ##   )
 ## )
+
+# https://notast.netlify.app/post/r-you-ready-for-python-gentle-introduction-to-reticulate-package/
+# https://rstudio.github.io/reticulate/articles/calling_python.html
+
+
+## library(reticulate)
+## gum <- import("pyAgrum", convert = FALSE)
+
+## bn = gum$BayesNet('test_potentials')
+
+## for (name_ in c("a", "b", "c", "d", "e")) {
+##   bn$add(name_, 2L)
+## }
+
+## for (e in list(c("b", "a"), c("c", "a"), c("a", "d"), c("e", "d"))) {
+##   bn$addArc(e[1], e[2])
+## }
+
+## bn$cpt("a")$fillWith(as.integer(1:2^3))
+## bn$cpt("d")$fillWith(as.integer(1:2^3))
+
+## py_run_string("def mult (x, y):
+##           return(x * y)")
+
+## py$mult(bn$cpt("a"), bn$cpt("d"))
+
+## construct_R_potential <- function(ndims, nlvls, sparsity) {
+##   dims <- rep(nlvls, ndims)
+##   n <- prod(dims)
+##   array(
+##     sample(c(0:1), n, TRUE, c(sparsity, 1 - sparsity)),
+##     dim = dims,
+##     dimnames = structure(
+##       replicate(ndims, letters[1:nlvls], FALSE),
+##       names = LETTERS[1:ndims]
+##     )
+##   )  
+## }
+
+
 
 ## offset <- 4L
 
@@ -503,3 +542,186 @@
 ## .map_int(cp$charge$C, function(x) length(names(x)))
 # sparta::mult(cp$charge$C[[59]], cp$charge$C[[60]])
 ## cp$charge$C[[60]]
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                 XPTR    project
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## // [[Rcpp::export]]
+## SEXP make_xptr() {
+##   arma::Mat<unsigned short> A(1000, 1000000);
+##   // arma::Mat<short>* ptr = new arma::Mat<short>;
+##   // (*ptr) = A;
+##   arma::Mat<unsigned short>* ptr(new arma::Mat<unsigned short>(A));
+##   std::cout << sizeof(*ptr) << "\n";
+##   XPtr<arma::Mat<unsigned short>> p(ptr, true);
+##   return p;
+## }
+
+## size_mb <- function(x) {
+##   format(object.size(x), units = "Mb", standard = "auto", digits = 1L)
+## }
+
+## pryr::mem_used()
+
+## A <- matrix(1L, nrow  = 1000L, ncol = 100000)
+## size_mb(A)      # 3.814G
+
+# Initial: 1.04G / 7.45G
+# a <- make_xptr() # 1.87G -> 2.91G
+
+# Initial: 1.07G / 7.45G
+# a <- make_xptr() # 1.87G -> 2.91G // using short!
+
+# Initial: 1.08G / 7.45G
+# a <- make_xptr() # 3.73G -> 4.81G // using int!
+
+
+# Initial: 1.08G / 7.45G
+# a <- make_xptr() # 1.85G -> 2.93G // using unsigned short!
+
+## A <- matrix(1L, nrow = 1000L, ncol = 1000000L) # 3.8G
+## rm(A)
+## size_mb(A)
+
+## x1   <- new.env()
+## a <- create_xptr(1000L, 100000L)
+## fill_xptr(a, 1L)
+## g <- return_val(a) # 381.5MB
+## release_me(a)
+## rm(a)
+
+## f <- function(e) release_me(e$b)
+
+## x1   <- new.env()
+## x1$b <- create_xptr2(1000L, 1000000L) # 3.61- 1.75 = 1.86G
+## reg.finalizer(x1, f)
+## rm(x1)
+
+## x2   <- new.env()
+## x2$b <- create_xptr2(1000L, 1000000L) # 2.24G
+## reg.finalizer(x2, f)
+## rm(x2)
+
+## x3   <- new.env()
+## x3$b <- create_xptr2(1000L, 1000000L) # 2.24G
+## reg.finalizer(x3, f)
+## rm(x3)
+
+## x4   <- new.env()
+## x4$b <- create_xptr2(1000L, 1000000L) # 2.24G
+## reg.finalizer(x4, f)
+## rm(x4)
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#        
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## gcinfo(TRUE)
+## pryr::mem_used()
+
+## make_ <- function() {
+##   e <- new.env(size = 3e8); rm(e)
+##   e <- new.env()
+##   e$xptr <- create_xptr2(1000L, 1e6)
+##   reg.finalizer(e, function(e) release_me(e$xptr))
+##   e
+## }
+
+## f <- function(e) release_me(e)
+
+## a <- create_xptr2(1000L, 1e6L)
+## reg.finalizer(a, f)
+## rm(a)
+## gc()
+
+## b <- make_()
+## rm(b)
+
+## c <- make_()
+## rm(c)
+
+## d <- make_()
+## rm(d)
+
+## create_xptr2(1000L, 1e6)
+
+## e <- new.env(size = 1e8)
+## r <- new.env(size = 3e8)
+## pryr::mem_used()
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#               as_sparta.data.frame 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Rcpp::sourceCpp("../src/converters.cpp")
+## A <- jti::asia
+
+
+## microbenchmark::microbenchmark(
+##   as_sparta__(A, structure(lapply(A, unique), names = colnames(A))),
+##   table(A)
+## )
+
+## microbenchmark::microbenchmark(
+##   as_sparta__(d, structure(lapply(d, unique), names = colnames(d))),
+##   table(d),
+##   times = 5
+## )
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  FIXING SLICE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Rcpp::sourceCpp("../src/slice.cpp")
+
+## bnlearn_to_cpts <- function(l) {
+##   cpts <- lapply(l, function(x) {
+##     xp <- x$prob
+##     # Make as_sparta.table instead of this hack
+##     class(xp) <- c("array", class(xp))
+##     if (length(dim(xp)) == 1L) {
+##       xn <- structure(list(dimnames(xp)[[1]]), names = x$node)
+##       dimnames(xp) <- xn
+##     }
+##     xp
+##   })
+## }
+
+## nodes <- c(
+##   "meldug_1",
+##   "meldug_2",
+##   "middel_1",
+##   "lai_0",
+##   "lai_1",
+##   "nedboer_1",
+##   "mikro_1",
+##   "temp_1",
+##   "foto_1",
+##   "straaling_1",
+##   "dm_1",
+##   "dm_2", # From here it fucks up!
+##   "foto_2",
+##   "straaling_2",
+##   "temp_2",
+##   "lai_2"
+## )
+
+## l    <- readRDS("../../../../sandbox/r/bns/mildew.rds")
+## cpts <- bnlearn_to_cpts(l)
+## cpts <- cpts[nodes]
+## cl   <- jti::cpt_list(cpts)
+
+
+
+## s <- c(foto_2 = "0_55_kg_m2", dm_1 = "0_16_kg_m2") # 12 - 9
+## s <- s[2:1]
+## slice_(cl$dm_2, vals(cl$dm_2), dim_names(cl$dm_2), names(s), s)
+
+
+## gRbase::tabSlice(
+##   cpts$dm_2,
+##   slice = list(foto_2 = "0_55_kg_m2", dm_1 = "0_16_kg_m2")
+## )[21:26]
+
+

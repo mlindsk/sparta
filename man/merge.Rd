@@ -3,17 +3,23 @@
 \name{mult}
 \alias{mult}
 \alias{mult.sparta}
+\alias{mult.double}
 \alias{div}
 \alias{div.sparta}
+\alias{div.double}
 \title{Multiplication and division of sparse tables}
 \usage{
 mult(x, y)
 
 \method{mult}{sparta}(x, y)
 
+\method{mult}{double}(x, y)
+
 div(x, y)
 
 \method{div}{sparta}(x, y)
+
+\method{div}{double}(x, y)
 }
 \arguments{
 \item{x}{sparta object}
@@ -58,6 +64,9 @@ y <- array(
 sx <- as_sparta(x)
 sy <- as_sparta(y)
 
+dim_names(sx)
+dim_names(sy)
+
 mult(sx, sy)
 div(sy, sx)
 
@@ -93,6 +102,5 @@ div(su, sx)
 so <- sparta_ones(dim_names(sx))
 mult(so, 2)
 div(so, -2)
-
 
 }

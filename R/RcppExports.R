@@ -9,8 +9,12 @@ as_cpt_ <- function(x, xval, xvar, y) {
     .Call(`_sparta_as_cpt_`, x, xval, xvar, y)
 }
 
-marginalize_ <- function(x, xval, xvar, y, flow = TRUE) {
-    .Call(`_sparta_marginalize_`, x, xval, xvar, y, flow)
+marginalize_sum_ <- function(x, xval, xvar, y) {
+    .Call(`_sparta_marginalize_sum_`, x, xval, xvar, y)
+}
+
+marginalize_max_ <- function(x, xval, xvar, y) {
+    .Call(`_sparta_marginalize_max_`, x, xval, xvar, y)
 }
 
 merge_ <- function(x, y, xval, yval, xvar, yvar, op = "*") {

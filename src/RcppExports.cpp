@@ -33,9 +33,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// marginalize_
-Rcpp::List marginalize_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str y, bool flow);
-RcppExport SEXP _sparta_marginalize_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP ySEXP, SEXP flowSEXP) {
+// marginalize_sum_
+Rcpp::List marginalize_sum_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str y);
+RcppExport SEXP _sparta_marginalize_sum_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -43,8 +43,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< vec_dbl& >::type xval(xvalSEXP);
     Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
     Rcpp::traits::input_parameter< vec_str >::type y(ySEXP);
-    Rcpp::traits::input_parameter< bool >::type flow(flowSEXP);
-    rcpp_result_gen = Rcpp::wrap(marginalize_(x, xval, xvar, y, flow));
+    rcpp_result_gen = Rcpp::wrap(marginalize_sum_(x, xval, xvar, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// marginalize_max_
+Rcpp::List marginalize_max_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str y);
+RcppExport SEXP _sparta_marginalize_max_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::Mat<short>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< vec_dbl& >::type xval(xvalSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(marginalize_max_(x, xval, xvar, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -100,7 +113,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_sparta_as_sparta_", (DL_FUNC) &_sparta_as_sparta_, 2},
     {"_sparta_as_cpt_", (DL_FUNC) &_sparta_as_cpt_, 4},
-    {"_sparta_marginalize_", (DL_FUNC) &_sparta_marginalize_, 5},
+    {"_sparta_marginalize_sum_", (DL_FUNC) &_sparta_marginalize_sum_, 4},
+    {"_sparta_marginalize_max_", (DL_FUNC) &_sparta_marginalize_max_, 4},
     {"_sparta_merge_", (DL_FUNC) &_sparta_merge_, 7},
     {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 6},
     {"_sparta_slice_", (DL_FUNC) &_sparta_slice_, 5},

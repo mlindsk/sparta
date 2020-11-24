@@ -5,14 +5,16 @@
 \alias{slice.sparta}
 \title{Slice}
 \usage{
-slice(x, s)
+slice(x, s, drop = FALSE)
 
-\method{slice}{sparta}(x, s)
+\method{slice}{sparta}(x, s, drop = FALSE)
 }
 \arguments{
 \item{x}{sparta object}
 
 \item{s}{a slice in form of a named character vector}
+
+\item{drop}{Logical. If \code{TRUE}, the variables in \code{s} are removed}
 }
 \value{
 A sparta object
@@ -40,5 +42,8 @@ sx <- as_cpt(sx, "a")
 # the probability distriubtion when 'a' is 'a2' 
 sxa2 <- slice(sx, c(a = "a2"))
 get_val(sxa2, c(a = "a2", b = "b1", c = "c2"))
+
+sxa2_drop <- slice(sx, c(a = "a2"), drop = TRUE)
+get_val(sxa2_drop, c(b = "b1", c = "c2"))
 
 }

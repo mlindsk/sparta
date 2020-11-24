@@ -22,10 +22,16 @@ check_fast:
 	Rscript -e "devtools::check(build_args = c('--no-build-vignettes'), args = c('--no-build-vignettes'))"
 
 install:
-	Rscript -e "devtools::install()"
+	sudo Rscript -e "devtools::install()"
 
 test:
 	Rscript -e "devtools::load_all(); tinytest::test_all('.', color = TRUE)"
 
 readme:
 	Rscript -e "rmarkdown::render('README.Rmd')"
+
+# Make a function that deduce the version number itself!
+build:
+	Rscript -e "devtools::build()"; \
+	cd /home/mads/Documents/phd/software/; \
+	R CMD check --as-cran sparta_0.6.1.tar.gz

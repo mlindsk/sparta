@@ -30,7 +30,10 @@ umap_str_int paste_cols(arma::Mat<short>& A) {
       std::next(v.begin()),
       v.end(),
       s,
-      [](std::string i, int j) -> std::string {return i + std::to_string(j);}
+      [](std::string i, int j) -> std::string {
+	return i + ":" + std::to_string(j); // : since 1 + 29 = 12 + 9 e.g.
+	// return i + std::to_string(j);
+      }
       );
     out[s].push_back(i);
   }

@@ -59,7 +59,6 @@ expect_equal(
   ncol(dsxy2)
 )
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # marginalize
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,7 +86,7 @@ expect_equal(
 )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Conditional probability tables
+# conditional probability tables
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 3 configurations of a and b (1, 2) is missing
@@ -101,4 +100,34 @@ expect_identical(
   sum(as_cpt(msxy1, character(0))),
   sum(normalize(msxy1)),
   1
+)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# test that null-table times anything is null
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+snull <- structure(
+    matrix(nrow = 0L, ncol = 0L),
+    vals = vector("numeric", length = 0L),
+    dim_names = dim_names(sy),
+    class = c("sparta", "matrix")
+)
+
+expect_equal(
+  ncol(mult(sx, snull)),
+  0L
+)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  slicing on a cell that was never observed
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+expect_error(
+  slice(sx, c(b = "b2", c = "c2"))
+)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  multiplication with a scalar 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+expect_identical(
+  mult(2, sx),
+  mult(sx, 2)
 )

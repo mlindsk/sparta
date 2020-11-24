@@ -6,7 +6,7 @@
 \alias{sparta-package}
 \title{sparta: Sparse Tables}
 \description{
-Fast multiplication and division of sparse tables.
+Fast Multiplication and Marginalization of Sparse Tables.
 }
 \seealso{
 Useful links:

@@ -79,12 +79,12 @@ sparta_struct <- function(x, vals, dim_names) {
 }
 
 
-#' Get value 
+#' Get value or cell name
 #'
-#' Find the value corresponding to the configuration in y
+#' Find the value or the name of a cell
 #'
 #' @param x sparta
-#' @param y named character vector
+#' @param y named character vector or vector of cell indices
 #' @examples
 #' x <- array(
 #'   c(1,0,0,2,3,4,0,0),
@@ -98,11 +98,14 @@ sparta_struct <- function(x, vals, dim_names) {
 #'
 #' sx <- as_sparta(x)
 #' get_val(sx, c(a = "a2", b = "b1", c = "c2"))
-#'
+#' get_cell_name(sx, sx[, 4])
+
+#' @rdname get_val_cell
 #' @export
 get_val <- function(x, y) UseMethod("get_val")
 
-#' @rdname get_val
+
+#' @rdname get_val_cell
 #' @export
 get_val.sparta <- function(x, y) {
   
@@ -126,6 +129,23 @@ get_val.sparta <- function(x, y) {
     return(attr(x, "vals")[which_idx])
   }
 }
+
+
+#' @rdname get_val_cell
+#' @export
+get_cell_name <- function(x, y) UseMethod("get_cell_name")
+
+
+#' @rdname get_val_cell
+#' @export
+get_cell_name.sparta <- function(x, y) {
+  if (!inherits(y, "integer")) stop("y must be an integer vector", call. = FALSE)
+  structure(.map_chr(
+    seq_along(dim_names(x)),
+    function(i) (dim_names(x)[[i]])[y[i]]
+  ), names = names(x))
+}
+
 
 #' Normalize
 
@@ -282,25 +302,38 @@ which_max_idx.sparta <- function(x) {
 print.sparta <- function(x, ...) {
   if (inherits(x, "sparta_unity")) {
     cat(" <sparta_unity>\n")
+    cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
-    cat(" <cells>")
-    prmatrix(
-      x,
-      rowlab = names(attr(x, "dim_names")),
-      collab = rep("", ncol(x))
-    )
-    cat("\n <vals>")
-    prmatrix(
-      matrix(attr(x, "vals"), nrow = 1L),
-      rowlab = "",
-      collab = rep("", length(attr(x, "vals")))
-    )
-  }
-  cat("\n <dim_names>\n")
-  dn  <- attr(x, "dim_names")
-  ndn <- names(dn)
-  for (k in 1:length(dn)) {
-    dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
-    cat(dn_k, "\n")
+    d <- as.data.frame(t(x))
+    colnames(d) <- names(x)
+    d[["val"]] <- vals(x)
+    print(d)    
   }
 }
+
+## print.sparta <- function(x, ...) {
+##   if (inherits(x, "sparta_unity")) {
+##     cat(" <sparta_unity>\n")
+##     cat(" ", paste(names(x), sep = ","), "\n")
+##   } else {
+##     cat(" <cells>")
+##     prmatrix(
+##       x,
+##       rowlab = names(attr(x, "dim_names")),
+##       collab = rep("", ncol(x))
+##     )
+##     cat("\n <vals>")
+##     prmatrix(
+##       matrix(attr(x, "vals"), nrow = 1L),
+##       rowlab = "",
+##       collab = rep("", length(attr(x, "vals")))
+##     )
+##   }
+##   ## cat("\n <dim_names>\n")
+##   ## dn  <- attr(x, "dim_names")
+##   ## ndn <- names(dn)
+##   ## for (k in 1:length(dn)) {
+##   ##   dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
+##   ##   cat(dn_k, "\n")
+##   ## }
+## }
