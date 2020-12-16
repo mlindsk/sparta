@@ -92,7 +92,7 @@ div(ds1, ds2)
 # where all clique potentials must be intialized
 # as the identity table
 
-su <- sparta_unity_struct(dim_names(sy))
+su <- sparta_unity_struct(dim_names(sy), rank = 1)
 mult(sx, su)
 div(su, sx)
 
@@ -102,5 +102,4 @@ div(su, sx)
 so <- sparta_ones(dim_names(sx))
 mult(so, 2)
 div(so, -2)
-
 }

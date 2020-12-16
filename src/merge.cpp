@@ -50,7 +50,9 @@ Rcpp::List merge_disjoint_(
     }
   }
 
-  return Rcpp::List::create(out_mat, out_val);
+  vec_str dim_names = xvar;
+  dim_names.insert(dim_names.end(), yvar.begin(), yvar.end());
+  return Rcpp::List::create(out_mat, out_val, dim_names);
 }
 
 
@@ -67,6 +69,7 @@ Rcpp::List merge_(
 {
 
   // NOTE: The order of the variables in the final output is (xvar, yvar\xvar)
+  //       yvar\xvar may be permuted due to sorting!
 
   vec_str names_sep = set_intersect(xvar, yvar);
   if (names_sep.size() == 0) return merge_disjoint_(x, y, xval, yval, xvar, yvar);
@@ -161,7 +164,10 @@ Rcpp::List merge_(
       }
     }
   }
-  return Rcpp::List::create(out_mat, out_val);
+
+  vec_str dim_names = xvar;
+  dim_names.insert(dim_names.end(), names_res.begin(), names_res.end());
+  return Rcpp::List::create(out_mat, out_val, dim_names);
 }
 
 
@@ -171,7 +177,8 @@ Rcpp::List merge_unity_(
   vec_dbl& xval,
   vec_str xvar,
   vec_str yvar,
-  vec_int ydim, 
+  vec_int ydim,
+  double rank = 1,
   bool reciprocal = false
   )
 {
@@ -221,10 +228,12 @@ Rcpp::List merge_unity_(
       }
 
       out_mat.col(counter) = v;
-      out_val[counter] = reciprocal ? 1 / xval[i] : xval[i];
+      out_val[counter] = reciprocal ? 1 / (xval[i] * rank) : xval[i] * rank;
       counter ++;
     }
   }
   
-  return Rcpp::List::create(out_mat, out_val);
+  vec_str dim_names = xvar;
+  dim_names.insert(dim_names.end(), names_res.begin(), names_res.end());
+  return Rcpp::List::create(out_mat, out_val, dim_names);
 }

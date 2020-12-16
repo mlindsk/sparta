@@ -1,3 +1,15 @@
+# sparta v0.7.0 (2020-12-16)
+
+ * unity tables now have a rank attribute which is just the
+ unique value that all cells have. Because of this, a unity
+ table can now be multiplied with a scalar. And regular 
+ sparta tables can be multiplied with unities of different rank.
+ As a consequence, unities can now be marginalized also.
+ 
+ * New function `equiv` to test if two sparta objects are identical
+ 
+ * Fixed a bug when assigning dimnames to the result of multiplication
+
 # sparta v0.6.1 (2020-11-24)
 
  * marginalization is now faster due to some refactoring

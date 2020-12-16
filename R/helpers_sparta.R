@@ -28,14 +28,17 @@ sparta_ones <- function(dim_names) {
 #' Construct a sparse table of ones
 #'
 #' @param dim_names A named list of discrete levels
+#' @param rank The value of each element. Default is \code{1}.
 #' @return A sparta object
 #' @examples
-#' sparta_unity_struct(list(a = c("a1", "a2"), b = c("b1", "b2")))
+#' s <- sparta_unity_struct(list(a = c("a1", "a2"), b = c("b1", "b2")), rank = 1)
+#' mult(s, 2)
 #' @export
-sparta_unity_struct <- function(dim_names) {
+sparta_unity_struct <- function(dim_names, rank = 1L) {
   structure(
     matrix(nrow = 0L, ncol = 0L),
     vals = vector("numeric", length = 0L),
+    rank = rank,
     dim_names = dim_names,
     class = c("sparta_unity", "sparta", "matrix")
   )
@@ -178,6 +181,57 @@ normalize.sparta <- function(x) {
   x
 }
 
+
+#' Equiv
+#'
+#' Determine if two sparta objects are equivalent
+#' 
+#' @param x sparta object
+#' @param y sparta object
+#' @return Logical. \code{TRUE} if \code{x} and \code{y} are equivalent
+#' @examples
+#'
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' y <- array(
+#'   c(2,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#' 
+#' sx <- as_sparta(x)
+#' sy <- as_sparta(y)
+#' 
+#' equiv(sx, sy)
+#' equiv(sx, sx)
+#'
+#' @export
+equiv <- function(x, y) UseMethod("equiv")
+
+#' @rdname equiv
+#' @export
+equiv.sparta <- function(x, y) {
+  if (!identical(dim(x), dim(y))) return(FALSE)
+  if (anyNA(match(vals(x), vals(y)))) return(FALSE)
+  all(apply(x, 2L, function(j) {
+    cell <- get_cell_name(x, j)
+    identical(get_val(x, cell), get_val(y, cell))
+  }))
+}
+
+
 #' Sparta getters
 #'
 #' Getter methods for sparta objects
@@ -302,6 +356,7 @@ which_max_idx.sparta <- function(x) {
 print.sparta <- function(x, ...) {
   if (inherits(x, "sparta_unity")) {
     cat(" <sparta_unity>\n")
+    cat("  rank:", attr(x, "rank"), "\n")
     cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
     d <- as.data.frame(t(x))

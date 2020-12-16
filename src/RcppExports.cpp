@@ -79,8 +79,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // merge_unity_
-Rcpp::List merge_unity_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str yvar, vec_int ydim, bool reciprocal);
-RcppExport SEXP _sparta_merge_unity_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP yvarSEXP, SEXP ydimSEXP, SEXP reciprocalSEXP) {
+Rcpp::List merge_unity_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str yvar, vec_int ydim, double rank, bool reciprocal);
+RcppExport SEXP _sparta_merge_unity_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP yvarSEXP, SEXP ydimSEXP, SEXP rankSEXP, SEXP reciprocalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,8 +89,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
     Rcpp::traits::input_parameter< vec_str >::type yvar(yvarSEXP);
     Rcpp::traits::input_parameter< vec_int >::type ydim(ydimSEXP);
+    Rcpp::traits::input_parameter< double >::type rank(rankSEXP);
     Rcpp::traits::input_parameter< bool >::type reciprocal(reciprocalSEXP);
-    rcpp_result_gen = Rcpp::wrap(merge_unity_(x, xval, xvar, yvar, ydim, reciprocal));
+    rcpp_result_gen = Rcpp::wrap(merge_unity_(x, xval, xvar, yvar, ydim, rank, reciprocal));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -116,7 +117,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sparta_marginalize_sum_", (DL_FUNC) &_sparta_marginalize_sum_, 4},
     {"_sparta_marginalize_max_", (DL_FUNC) &_sparta_marginalize_max_, 4},
     {"_sparta_merge_", (DL_FUNC) &_sparta_merge_, 7},
-    {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 6},
+    {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 7},
     {"_sparta_slice_", (DL_FUNC) &_sparta_slice_, 5},
     {NULL, NULL, 0}
 };

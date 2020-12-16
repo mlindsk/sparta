@@ -21,8 +21,8 @@ merge_ <- function(x, y, xval, yval, xvar, yvar, op = "*") {
     .Call(`_sparta_merge_`, x, y, xval, yval, xvar, yvar, op)
 }
 
-merge_unity_ <- function(x, xval, xvar, yvar, ydim, reciprocal = FALSE) {
-    .Call(`_sparta_merge_unity_`, x, xval, xvar, yvar, ydim, reciprocal)
+merge_unity_ <- function(x, xval, xvar, yvar, ydim, rank = 1, reciprocal = FALSE) {
+    .Call(`_sparta_merge_unity_`, x, xval, xvar, yvar, ydim, rank, reciprocal)
 }
 
 slice_ <- function(x, xval, dim_names, slice_names, slice_cell) {

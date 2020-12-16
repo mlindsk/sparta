@@ -4,10 +4,12 @@
 \alias{sparta_unity_struct}
 \title{Sparse unity table}
 \usage{
-sparta_unity_struct(dim_names)
+sparta_unity_struct(dim_names, rank = 1L)
 }
 \arguments{
 \item{dim_names}{A named list of discrete levels}
+
+\item{rank}{The value of each element. Default is \code{1}.}
 }
 \value{
 A sparta object
@@ -16,5 +18,6 @@ A sparta object
 Construct a sparse table of ones
 }
 \examples{
-sparta_unity_struct(list(a = c("a1", "a2"), b = c("b1", "b2")))
+s <- sparta_unity_struct(list(a = c("a1", "a2"), b = c("b1", "b2")), rank = 1)
+mult(s, 2)
 }

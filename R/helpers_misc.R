@@ -7,8 +7,13 @@
 .map_chr <- function(x, fun, ...) {
   vapply(X = x, FUN = fun, FUN.VALUE = character(1), ...)
 }
+
 .map_int <- function(x, fun, ...) {
   vapply(X = x, FUN = fun, FUN.VALUE = integer(1), ...)
+}
+
+.map_dbl <- function(x, fun, ...) {
+  vapply(X = x, FUN = fun, FUN.VALUE = double(1), ...)
 }
 
 # SETS

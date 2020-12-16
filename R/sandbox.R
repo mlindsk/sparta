@@ -724,4 +724,41 @@
 ##   slice = list(foto_2 = "0_55_kg_m2", dm_1 = "0_16_kg_m2")
 ## )[21:26]
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#        
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## x <- readRDS("/home/mads/Documents/phd/software/sparta/inst/sp_pot_par_k.rds")
+## y <- readRDS("/home/mads/Documents/phd/software/sparta/inst/message_k.rds")
+## z <- readRDS("/home/mads/Documents/phd/software/sparta/inst/gr_pot_par_k.rds")
 
+## nz <- names(z)
+## a <- apply(z, 2L, function(j) {
+##   cell <- structure(get_cell_name(z, j), names = nz)
+##   val  <- get_val(z, cell)
+##   cell <- c(cell, val = val)
+##   list(cell, "-")
+## })
+
+## d <- lapply(a, function(x) {
+##   d <- as.data.frame(matrix(x[[1]], 1))
+##   colnames(d) <- c(nz, "val")
+##   d
+## })
+## d <- do.call(rbind, d)
+
+
+## m <- merge_(x, y, vals(x), vals(y), names(x), names(y))
+## dn <- dim_names(z)
+## dn <- dn[c(3,2,1,5,4)]
+
+
+## dn1 <- attr(x, "dim_names")
+## dn2 <- attr(y, "dim_names")
+## c(dn1, dn2[setdiff(names(dn2), names(dn1))])
+
+## e <- sparta_struct(m[[1]], m[[2]], dn)
+## dim_names(e)
+## apply(e, 2L, function(j) {
+##   cell <- get_cell_name(e, j)
+## })
+## equiv(e, z)
