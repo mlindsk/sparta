@@ -2,7 +2,6 @@
 #include "set_ops.h"
 #include "misc_utils.h"
 
-
 Rcpp::List merge_disjoint_(
   arma::Mat<short>& x,
   arma::Mat<short>& y,

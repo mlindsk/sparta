@@ -3,6 +3,8 @@
 \name{vals}
 \alias{vals}
 \alias{vals.sparta}
+\alias{get_values}
+\alias{get_values.sparta}
 \alias{dim_names}
 \alias{dim_names.sparta}
 \alias{names.sparta}
@@ -11,6 +13,10 @@
 vals(x)
 
 \method{vals}{sparta}(x)
+
+get_values(x)
+
+\method{get_values}{sparta}(x)
 
 dim_names(x)
 

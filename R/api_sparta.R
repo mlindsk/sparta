@@ -1,4 +1,4 @@
-merge__ <- function(x, y, mult = TRUE) {
+merge <- function(x, y, mult = TRUE) {
   is_y_scalar <- is_scalar(y)
   
   if (!inherits(y, "sparta") && !is_y_scalar) {
@@ -23,29 +23,16 @@ merge__ <- function(x, y, mult = TRUE) {
   dn  <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
 
   if (is_x_unity && is_y_unity) {
-    return(sparta_unity_struct(dn))
+    return(sparta_unity_struct(dn, attr(x, "rank") * attr(y, "rank")))
   }
   
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {
-      merge_unity_(
-        x,
-        vals(x),
-        names(x),
-        names(y),
-        .map_int(dim_names(y), length),
-        attr(y, "rank")
-      )
+      ydim <- .map_int(dim_names(y), length)
+      merge_unity_(x, vals(x), names(x), names(y), ydim, attr(y, "rank"))
     } else if (!is_y_unity && is_x_unity) {
-      merge_unity_(
-        y,
-        vals(y),
-        names(y),
-        names(x),
-        .map_int(dim_names(x), length), 
-        attr(x, "rank"),
-        ifelse(mult, FALSE, TRUE)
-      )
+      xdim <-.map_int(dim_names(x), length)
+      merge_unity_(y, vals(y), names(y), names(x), xdim, attr(x, "rank"), ifelse(mult, FALSE, TRUE))
     }
   } else {
     merge_(x, y, vals(x), vals(y), names(x), names(y), ifelse(mult, "*", "/"))
@@ -115,10 +102,6 @@ merge__ <- function(x, y, mult = TRUE) {
 #' # Example 3)
 #' # ----------
 #'
-#' # Useful in connection to the Junction Tree Algorithm
-#' # where all clique potentials must be intialized
-#' # as the identity table
-#' 
 #' su <- sparta_unity_struct(dim_names(sy), rank = 1)
 #' mult(sx, su)
 #' div(su, sx)
@@ -136,7 +119,7 @@ mult <- function(x, y) UseMethod("mult")
 
 #' @rdname merge
 #' @export
-mult.sparta <- function(x, y) merge__(x, y)
+mult.sparta <- function(x, y) merge(x, y)
 
 #' @rdname merge
 #' @export
@@ -145,7 +128,7 @@ mult.double <- function(x, y) {
   if (!inherits(y, "sparta")) {
     stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
   }
-  merge__(y, x)
+  merge(y, x)
 }
 
 #' @rdname merge
@@ -154,7 +137,7 @@ div <- function(x, y) UseMethod("div")
 
 #' @rdname merge
 #' @export
-div.sparta <- function(x, y) merge__(x, y, FALSE)
+div.sparta <- function(x, y) merge(x, y, FALSE)
 
 #' @rdname merge
 #' @export
@@ -163,7 +146,7 @@ div.double <- function(x, y) {
   if (!inherits(y, "sparta")) {
     stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
   }
-  merge__(y, x, FALSE)
+  merge(y, x, FALSE)
 }
 
 

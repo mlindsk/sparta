@@ -1,3 +1,12 @@
+# sparta v0.7.1.0 (2021-03-01)
+
+ * Multiplication of unity tables was not correct due to the new rank argument. The fix was to multiply the rank of the tables.
+ * Print method changed to print cells as columns which is also how the sparse tables are represented under the hood.
+ * New functions (see documentation):
+   + =sparsity=: determines the ratio of non-zero cells and the size of the statespace.
+   + =as_df=: convert a sparse table to a =data.frame=. Either with or without zero cells
+   + =get_values=: The same as the existing =vals=
+
 # sparta v0.7.0 (2020-12-16)
 
  * unity tables now have a rank attribute which is just the

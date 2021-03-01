@@ -150,6 +150,31 @@ get_cell_name.sparta <- function(x, y) {
 }
 
 
+#' Sparsity
+
+#' @param x sparta
+#' @return The ratio of \code{ncol(x)} and the total statespace of \code{x}
+#' @examples
+#'
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' sx <- as_sparta(x)
+#' sparsity(sx)
+#' @export
+sparsity <- function(x) UseMethod("sparsity")
+
+#' @rdname sparsity
+#' @export
+sparsity.sparta <- function(x) ncol(x) / prod(.map_int(sparta::dim_names(x), length))
+
 #' Normalize
 
 #' @param x sparta
@@ -245,6 +270,13 @@ vals <- function(x) UseMethod("vals")
 #' @rdname getter
 #' @export
 vals.sparta <- function(x) attr(x, "vals")
+
+#' @rdname getter
+#' @export
+get_values <- function(x) UseMethod("get_values")
+
+#' @rdname getter
+get_values.sparta <- function(x) attr(x, "vals")
 
 #' @rdname getter
 #' @export
@@ -359,36 +391,16 @@ print.sparta <- function(x, ...) {
     cat("  rank:", attr(x, "rank"), "\n")
     cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
-    d <- as.data.frame(t(x))
-    colnames(d) <- names(x)
-    d[["val"]] <- vals(x)
-    print(d)    
+    # d <- as.data.frame(t(x))
+    # colnames(d) <- names(x)
+    # d[["val"]] <- vals(x)
+    # print(d)
+    d <- as.data.frame(
+      rbind(x, vals(x)),
+      row.names = c(names(x), "val"),
+      col.names = NULL
+    )
+    colnames(d) <- rep("", ncol(d))
+    print(d)
   }
 }
-
-## print.sparta <- function(x, ...) {
-##   if (inherits(x, "sparta_unity")) {
-##     cat(" <sparta_unity>\n")
-##     cat(" ", paste(names(x), sep = ","), "\n")
-##   } else {
-##     cat(" <cells>")
-##     prmatrix(
-##       x,
-##       rowlab = names(attr(x, "dim_names")),
-##       collab = rep("", ncol(x))
-##     )
-##     cat("\n <vals>")
-##     prmatrix(
-##       matrix(attr(x, "vals"), nrow = 1L),
-##       rowlab = "",
-##       collab = rep("", length(attr(x, "vals")))
-##     )
-##   }
-##   ## cat("\n <dim_names>\n")
-##   ## dn  <- attr(x, "dim_names")
-##   ## ndn <- names(dn)
-##   ## for (k in 1:length(dn)) {
-##   ##   dn_k <- paste(ndn[k], ": ", paste(dn[[k]], collapse = ", "), sep = "")
-##   ##   cat(dn_k, "\n")
-##   ## }
-## }

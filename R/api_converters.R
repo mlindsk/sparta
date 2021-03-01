@@ -62,6 +62,8 @@ as_sparta.data.frame <- function(x) {
   if (!all(lapply(x, class) == "character")) {
      stop("all varibles must be of class 'character'", call. = FALSE)
   }
+  # TODO: consider aggregate(U ~ A + S + T + L, x, sum)
+  # where U = 1L
   as_sparta(table(x, dnn = colnames(x)))
 }
 
@@ -99,6 +101,38 @@ as_array.sparta <- function(x) {
   arr
 }
 
+
+#' As data frame
+#'
+#' Turn a sparse table into a data frame
+#'
+#' @param x sparta object
+#' @param dense Logical indicating if zero cells should be present or not
+#' @return A data frame
+#' @seealso \code{\link{as_array}}
+#' @examples
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' as_df(as_sparta(x))
+#' @export
+as_df <- function(x, dense = FALSE) UseMethod("as_df")
+
+#' @rdname as_df
+#' @export
+as_df.sparta <- function(x, dense = FALSE) {
+  d <- as.data.frame.table(as_array(x), stringsAsFactors=FALSE)
+  if (!dense) d <- d[d$Freq != 0,]
+  colnames(d)[ncol(d)] <- "val"
+  d
+}
 
 #' As cpt
 #'

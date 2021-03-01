@@ -88,10 +88,6 @@ div(ds1, ds2)
 # Example 3)
 # ----------
 
-# Useful in connection to the Junction Tree Algorithm
-# where all clique potentials must be intialized
-# as the identity table
-
 su <- sparta_unity_struct(dim_names(sy), rank = 1)
 mult(sx, su)
 div(su, sx)

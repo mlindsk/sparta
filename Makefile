@@ -34,4 +34,4 @@ readme:
 build:
 	Rscript -e "devtools::build()"; \
 	cd /home/mads/Documents/phd/software/; \
-	R CMD check --as-cran sparta_0.6.1.tar.gz
+	R CMD check --as-cran sparta_0.7.1.tar.gz
