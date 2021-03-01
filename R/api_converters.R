@@ -41,7 +41,7 @@ as_sparta.array <- function(x) {
   if (!is_named_list(dimnames(x))) stop("some dimensions are not named properly")
   dim  <- .map_int(dimnames(x), function(z) length(z))
   sp <- as_sparta_(x, dim)
-  sparta_struct(sp[[1]], sp[[2]], dimnames(x))  
+  sparta_struct(sp[[1]], sp[[2]], dimnames(x))
 }
 
 #' @rdname as_sparta

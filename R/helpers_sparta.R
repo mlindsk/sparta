@@ -64,7 +64,7 @@ sparta_unity_struct <- function(dim_names, rank = 1L) {
 #' )
 #'
 #' sx <- as_sparta(x)
-#' sparta_struct(sx, vals(sx), dim_names(sx))
+#' sparta_struct(unclass(sx), vals(sx), dim_names(sx))
 #' @export
 sparta_struct <- function(x, vals, dim_names) {
   cond <- inherits(x, "matrix") &&
@@ -73,6 +73,7 @@ sparta_struct <- function(x, vals, dim_names) {
     length(dim_names) == nrow(x)
   stopifnot(cond)
   storage.mode(x) <- "integer"
+  rownames(x) <- names(dim_names)
   structure(
     x,
     vals = vals,
@@ -391,27 +392,10 @@ print.sparta <- function(x, ...) {
     cat("  rank:", attr(x, "rank"), "\n")
     cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
-    # ROWWISE:
-    # --------
     d <- as.data.frame(t(x))
     colnames(d) <- names(x)
     d[["val"]] <- round(vals(x), 3)
     print(d)
-
-    ## COLWISE:
-    ## --------
-    ## d <- as.data.frame(
-    ##   x,
-    ##   row.names = names(x),
-    ##   col.names = NULL
-    ## )
-    ## d[] <- apply(d, 2, function(e) {
-    ##   gsub("\\..*", "", e)      
-    ## })
-    ## d <- rbind(d, as.character(round(vals(x), 3)))
-    ## colnames(d) <- rep("", ncol(d))
-    ## rownames(d) <- c(names(x), "val")
-    ## print(d)
   }
 }
 
