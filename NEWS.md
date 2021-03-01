@@ -1,3 +1,6 @@
+# sparta v0.7.1.9999 (2021-03-01)
+ * The new print method turned out to cause problems in the long run. Printing a sparse table now prints columns as rows again with the corresponding value attached to the right.
+
 # sparta v0.7.1.0 (2021-03-01)
 
  * Multiplication of unity tables was not correct due to the new rank argument. The fix was to multiply the rank of the tables.

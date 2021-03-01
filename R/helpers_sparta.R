@@ -391,16 +391,28 @@ print.sparta <- function(x, ...) {
     cat("  rank:", attr(x, "rank"), "\n")
     cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
-    # d <- as.data.frame(t(x))
-    # colnames(d) <- names(x)
-    # d[["val"]] <- vals(x)
-    # print(d)
-    d <- as.data.frame(
-      rbind(x, vals(x)),
-      row.names = c(names(x), "val"),
-      col.names = NULL
-    )
-    colnames(d) <- rep("", ncol(d))
+    # ROWWISE:
+    # --------
+    d <- as.data.frame(t(x))
+    colnames(d) <- names(x)
+    d[["val"]] <- round(vals(x), 3)
     print(d)
+
+    ## COLWISE:
+    ## --------
+    ## d <- as.data.frame(
+    ##   x,
+    ##   row.names = names(x),
+    ##   col.names = NULL
+    ## )
+    ## d[] <- apply(d, 2, function(e) {
+    ##   gsub("\\..*", "", e)      
+    ## })
+    ## d <- rbind(d, as.character(round(vals(x), 3)))
+    ## colnames(d) <- rep("", ncol(d))
+    ## rownames(d) <- c(names(x), "val")
+    ## print(d)
   }
 }
+
+
