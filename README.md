@@ -38,4 +38,4 @@ devtools::install_github("mlindsk/sparta", build_vignettes = FALSE)
 
 The `jti`, <https://github.com/mlindsk/jti>, package (on CRAN)
 implements belief propagation via the Junction Tree Algorithm which
-relies heavily on `sparta` tables for extremely fast operations.
+relies heavily on `sparta` tables.
