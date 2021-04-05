@@ -1,8 +1,8 @@
 Package: sparta
 Type: Package
 Title: Sparse Tables
-Version: 0.7.1.9999
-Date: 2021-03-01
+Version: 0.7.2
+Date: 2021-04-03
 Authors@R: 
   c(person(given = "Mads",
            family = "Lindskou",
@@ -10,7 +10,6 @@ Authors@R:
            role = c("aut", "cre")))
 Description: Fast Multiplication and Marginalization of Sparse Tables.
 Encoding: UTF-8
-LazyData: true
 License: MIT + file LICENSE
 Imports: 
     Rcpp (>= 1.0.5)

@@ -19,7 +19,6 @@ vec_dbl std_sub_vec(vec_dbl& v, vec_int& indices) {
   return sub_vec;
 }
 
-
 umap_str_int paste_cols(arma::Mat<short>& A) {
   int N = A.n_cols;
   umap_str_int out(N);
@@ -36,6 +35,33 @@ umap_str_int paste_cols(arma::Mat<short>& A) {
       }
       );
     out[s].push_back(i);
+  }
+  return out;
+}
+
+umap_str_pair paste_marg(arma::Mat<short>& A, arma::uvec& row_idx, vec_dbl& xval) {
+  std::size_t N = A.n_cols;
+  umap_str_pair out;
+  for (int i = 0; i < N; i++) {
+    arma::Col<short> v = A.col(i);
+
+    std::vector<short> u(row_idx.size());
+    for (int i = 0; i < row_idx.size(); i++) {
+      u[i] = v[row_idx[i]];
+    }
+
+    std::string s = std::to_string(u[0]);
+    s = std::accumulate(
+      std::next(u.begin()),
+      u.end(),
+      s,
+      [](std::string i, int j) -> std::string {
+	return i + ":" + std::to_string(j);
+      }
+      );
+
+    out[s].first = i;
+    out[s].second += xval[i];
   }
   return out;
 }

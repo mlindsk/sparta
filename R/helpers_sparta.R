@@ -174,7 +174,7 @@ sparsity <- function(x) UseMethod("sparsity")
 
 #' @rdname sparsity
 #' @export
-sparsity.sparta <- function(x) ncol(x) / prod(.map_int(sparta::dim_names(x), length))
+sparsity.sparta <- function(x) 1 - ncol(x) / prod(.map_int(sparta::dim_names(x), length))
 
 #' Normalize
 

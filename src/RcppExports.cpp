@@ -47,6 +47,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// marginalize_sum_2
+Rcpp::List marginalize_sum_2(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str y);
+RcppExport SEXP _sparta_marginalize_sum_2(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::Mat<short>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< vec_dbl& >::type xval(xvalSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(marginalize_sum_2(x, xval, xvar, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // marginalize_max_
 Rcpp::List marginalize_max_(arma::Mat<short>& x, vec_dbl& xval, vec_str xvar, vec_str y);
 RcppExport SEXP _sparta_marginalize_max_(SEXP xSEXP, SEXP xvalSEXP, SEXP xvarSEXP, SEXP ySEXP) {
@@ -115,6 +129,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sparta_as_sparta_", (DL_FUNC) &_sparta_as_sparta_, 2},
     {"_sparta_as_cpt_", (DL_FUNC) &_sparta_as_cpt_, 4},
     {"_sparta_marginalize_sum_", (DL_FUNC) &_sparta_marginalize_sum_, 4},
+    {"_sparta_marginalize_sum_2", (DL_FUNC) &_sparta_marginalize_sum_2, 4},
     {"_sparta_marginalize_max_", (DL_FUNC) &_sparta_marginalize_max_, 4},
     {"_sparta_merge_", (DL_FUNC) &_sparta_merge_, 7},
     {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 7},

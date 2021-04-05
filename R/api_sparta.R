@@ -200,7 +200,7 @@ marg.sparta <- function(x, y, flow = "sum") {
   }
 
   m <- if (flow == "sum") {
-    marginalize_sum_(x, vals(x), xnames, y)
+    marginalize_sum_2(x, vals(x), xnames, y)
   } else {
     marginalize_max_(x, vals(x), xnames, y)
   }

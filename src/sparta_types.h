@@ -19,3 +19,4 @@ using vec_int = std::vector<int>;
 using vec_dbl = std::vector<double>;
 using vec_short = std::vector<short>;
 using umap_str_int = std::unordered_map<std::string, vec_int>;
+using umap_str_pair = std::unordered_map<std::string, std::pair<std::size_t, double>>;

@@ -13,6 +13,10 @@ marginalize_sum_ <- function(x, xval, xvar, y) {
     .Call(`_sparta_marginalize_sum_`, x, xval, xvar, y)
 }
 
+marginalize_sum_2 <- function(x, xval, xvar, y) {
+    .Call(`_sparta_marginalize_sum_2`, x, xval, xvar, y)
+}
+
 marginalize_max_ <- function(x, xval, xvar, y) {
     .Call(`_sparta_marginalize_max_`, x, xval, xvar, y)
 }

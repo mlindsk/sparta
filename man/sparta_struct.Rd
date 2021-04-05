@@ -31,5 +31,5 @@ x <- array(
 )
 
 sx <- as_sparta(x)
-sparta_struct(sx, vals(sx), dim_names(sx))
+sparta_struct(unclass(sx), vals(sx), dim_names(sx))
 }
