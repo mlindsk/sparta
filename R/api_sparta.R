@@ -269,7 +269,7 @@ slice.sparta <- function(x, s, drop = FALSE) {
   if (drop) {
     dn_new <- dim_names(x)[setdiff(names(x), names(s))]
     idx_s <- match(names(s), names(x))
-    return(sparta_struct(sp[[1]][-idx_s, ], sp[[2]], dn_new))
+    return(sparta_struct(sp[[1]][-idx_s, , drop = FALSE], sp[[2]], dn_new))
   }
   
   sparta_struct(sp[[1]], sp[[2]], dim_names(x))
