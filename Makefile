@@ -24,6 +24,11 @@ check_fast:
 install:
 	sudo Rscript -e "devtools::install()"
 
+
+install2:
+	cd ..; R CMD build sparta/; \
+	R CMD INSTALL sparta_0.7.3.tar.gz
+
 test:
 	Rscript -e "devtools::load_all(); tinytest::test_all('.', color = TRUE)"
 
@@ -34,4 +39,4 @@ readme:
 build:
 	Rscript -e "devtools::build()"; \
 	cd /home/mads/Documents/phd/software/; \
-	R CMD check --as-cran sparta_0.7.2.tar.gz
+	R CMD check --as-cran sparta_0.7.3.tar.gz

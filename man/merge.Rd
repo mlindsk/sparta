@@ -3,23 +3,23 @@
 \name{mult}
 \alias{mult}
 \alias{mult.sparta}
-\alias{mult.double}
+\alias{mult.numeric}
 \alias{div}
 \alias{div.sparta}
-\alias{div.double}
+\alias{div.numeric}
 \title{Multiplication and division of sparse tables}
 \usage{
 mult(x, y)
 
 \method{mult}{sparta}(x, y)
 
-\method{mult}{double}(x, y)
+\method{mult}{numeric}(x, y)
 
 div(x, y)
 
 \method{div}{sparta}(x, y)
 
-\method{div}{double}(x, y)
+\method{div}{numeric}(x, y)
 }
 \arguments{
 \item{x}{sparta object}

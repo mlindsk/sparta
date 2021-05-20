@@ -43,9 +43,9 @@ merge <- function(x, y, mult = TRUE) {
 
 
 #' @title Multiplication and division of sparse tables
-#' @param x sparta object
+#' @param x sparta object or scalar
 #' @param y sparta object or scalar
-#' @return A sparta object
+#' @return A sparta object or a scalar
 #' @examples
 #'
 #' # ----------
@@ -121,14 +121,25 @@ mult <- function(x, y) UseMethod("mult")
 #' @export
 mult.sparta <- function(x, y) merge(x, y)
 
+# #' @rdname merge
+# #' @export
+# mult.double <- function(x, y) {
+#   if (!is_scalar(x)) stop("x must be of class 'sparta' or a scalar", call. = FALSE)
+#   if (!inherits(y, "sparta")) {
+#     stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
+#   }
+#   merge(y, x)
+# }
+
 #' @rdname merge
 #' @export
-mult.double <- function(x, y) {
+mult.numeric <- function(x, y) {
   if (!is_scalar(x)) stop("x must be of class 'sparta' or a scalar", call. = FALSE)
-  if (!inherits(y, "sparta")) {
-    stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
+  if (is_scalar(y)) return(x * y)
+  if (inherits(y, "sparta")) {
+    merge(y, x)
   }
-  merge(y, x)
+
 }
 
 #' @rdname merge
@@ -139,14 +150,24 @@ div <- function(x, y) UseMethod("div")
 #' @export
 div.sparta <- function(x, y) merge(x, y, FALSE)
 
+# #' @rdname merge
+# #' @export
+# div.double <- function(x, y) {
+#   if (!is_scalar(x)) stop("x must be of class 'sparta' or a scalar", call. = FALSE)
+#   if (!inherits(y, "sparta")) {
+#     stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
+#   }
+#   merge(y, x, FALSE)
+# }
+
 #' @rdname merge
 #' @export
-div.double <- function(x, y) {
+div.numeric <- function(x, y) {
   if (!is_scalar(x)) stop("x must be of class 'sparta' or a scalar", call. = FALSE)
-  if (!inherits(y, "sparta")) {
-    stop("y must be a 'sparta' object when x is a scalar", call. = FALSE)
+  if (is_scalar(y)) return(x / y)
+  if (inherits(y, "sparta")) {
+    merge(y, x, FALSE)
   }
-  merge(y, x, FALSE)
 }
 
 
@@ -157,7 +178,7 @@ div.double <- function(x, y) {
 #' @param x sparta object
 #' @param y character vector of the variables to marginalize out
 #' @param flow either "sum" or "max"
-#' @return A sparta object
+#' @return A sparta object (or scalar if all variables are summed out)
 #' @examples
 #'
 #' x <- array(
