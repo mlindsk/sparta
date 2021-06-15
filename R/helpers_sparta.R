@@ -19,7 +19,7 @@ allowed_class_to_sparta <- function() {
 #' @export
 sparta_ones <- function(dim_names) {
   dim_ <- .map_int(dim_names, length)
-  utab <- array(1L, dim_, dim_names)
+  utab <- array(1L, dim_, dim_names) # Expensive?
   as_sparta(utab)
 }
 

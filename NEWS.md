@@ -1,3 +1,9 @@
+# sparta v0.7.3.9999 (2021-06-15)
+
+ * =marg= is now more efficient when =y= is =character(0)=
+ * A =sparta_unity_struct= can now be sliced if =drop = TRUE=.
+ * Better argument checks in =slice=
+
 # sparta v0.7.3 (2021-04-22)
 
  * Bug fixed when argument =drop= is =TRUE= in =slice= for tables that should reduce to one row.

@@ -17,7 +17,7 @@ marg(x, y, flow = "sum")
 \item{flow}{either "sum" or "max"}
 }
 \value{
-A sparta object
+A sparta object (or scalar if all variables are summed out)
 }
 \description{
 Marginalize a sparse table given a vector of variables to marginalize out

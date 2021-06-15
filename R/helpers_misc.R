@@ -27,6 +27,10 @@ is_scalar <- function(x) {
   is.atomic(x) && length(x) == 1L && (class(x) == "numeric" || class(x) == "integer")
 }
 
+is_non_empty_vector_chr <- function(x) {
+  is.vector(x, mode = "character") && length(x) > 0L
+}
+
 is_named_list <- function(x) {
   if (is.null(names(x))) return(FALSE)
   if ("" %in% names(x)) {
@@ -35,3 +39,4 @@ is_named_list <- function(x) {
     return(TRUE)
   }
 }
+

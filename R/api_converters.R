@@ -62,8 +62,9 @@ as_sparta.data.frame <- function(x) {
   if (!all(lapply(x, class) == "character")) {
      stop("all varibles must be of class 'character'", call. = FALSE)
   }
-  # TODO: consider aggregate(U ~ A + S + T + L, x, sum)
-  # where U = 1L
+  # aggregate(rep(1L, nrow(x)) ~ gear + carb, FUN = sum, data = x)
+  # aggregate(make_form(colnames(derma)[1:8]), data = derma[, 1:8], FUN = sum)
+  # TODO: TRY IT OUT FOR LARGE DATASETS! JUST rbind derma a couple of times
   as_sparta(table(x, dnn = colnames(x)))
 }
 

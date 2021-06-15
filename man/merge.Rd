@@ -22,12 +22,12 @@ div(x, y)
 \method{div}{numeric}(x, y)
 }
 \arguments{
-\item{x}{sparta object}
+\item{x}{sparta object or scalar}
 
 \item{y}{sparta object or scalar}
 }
 \value{
-A sparta object
+A sparta object or a scalar
 }
 \description{
 Multiplication and division of sparse tables

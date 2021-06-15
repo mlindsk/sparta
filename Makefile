@@ -27,7 +27,7 @@ install:
 
 install2:
 	cd ..; R CMD build sparta/; \
-	R CMD INSTALL sparta_0.7.3.tar.gz
+	R CMD INSTALL sparta_0.7.3.9999.tar.gz
 
 test:
 	Rscript -e "devtools::load_all(); tinytest::test_all('.', color = TRUE)"

@@ -203,6 +203,8 @@ marg <- function(x, y, flow = "sum") UseMethod("marg")
 #' @export
 marg.sparta <- function(x, y, flow = "sum") {
 
+  if (eq_empt_chr(y)) return(x)
+  
   if (inherits(x, "sparta_unity")) {
     dny <- dim_names(x)[y]
     attr(x, "rank") <- attr(x, "rank") * prod(.map_dbl(dny, length))
@@ -266,6 +268,9 @@ marg.sparta <- function(x, y, flow = "sum") {
 #' sxa2_drop <- slice(sx, c(a = "a2"), drop = TRUE)
 #' get_val(sxa2_drop, c(b = "b1", c = "c2"))
 #'
+#' u <- sparta_unity_struct(dim_names(sx))
+#' slice(u, c(a = "a1"), drop = TRUE)
+#' 
 #' @export
 slice <- function(x, s, drop = FALSE) UseMethod("slice")
 
@@ -273,18 +278,36 @@ slice <- function(x, s, drop = FALSE) UseMethod("slice")
 #' @export
 slice.sparta <- function(x, s, drop = FALSE) {
 
-  # TODO:
-  # let s be a list, so we can slice on arbitrary
-  # many levels for each variable in s
-  
-  if (inherits(x, "sparta_unity")) {
-    stop("a sparta_unity cannot be sliced. If needed, use 'sparta_ones'.", call. = FALSE)
+  if (length(s) == length(names(x)) && drop == TRUE) {
+    stop(
+      "cannot slice and drop all variables.",
+      " At least one variable must remain when drop = TRUE."
+    )
   }
-
+  
+  if (!is_non_empty_vector_chr(s)) {
+    stop("s must be a character vector of length > 0")
+  }
+  
   if (!all(names(s) %in% names(x))) {
     stop("some names in s are not in x. see `dim_names(x)`", call. = FALSE)
   }
+  
+  if (inherits(x, "sparta_unity")) {
+    if (drop == TRUE) {
+      dn_new <- dim_names(x)[setdiff(names(x), names(s))]
+      return(sparta_unity_struct(dn_new, rank = attr(x, "rank")))
+    } else {
+      stop(
+        "A sparta_unity cannot be sliced ",
+        "unless drop = TRUE. If needed, use 'sparta_ones'.", call. = FALSE)      
+    }
+  }
 
+  # IDEA:
+  # let s be a list, so we can slice on a range of levels
+  # i.e. list(a = c("a1", "a5"), b = c("b1"))
+  # will retain all levels of a that have "a1" and "a5"
   sp <- slice_(x, vals(x), dim_names(x), names(s), s)
 
   if (drop) {

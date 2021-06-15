@@ -31,11 +31,13 @@ install.packages("sparta")
 <!-- end list -->
 
 ``` r
-devtools::install_github("mlindsk/sparta", build_vignettes = FALSE)
+remotes::install_github("mlindsk/sparta")
 ```
 
 ## See Also
 
 The `jti`, <https://github.com/mlindsk/jti>, package (on CRAN)
 implements belief propagation via the Junction Tree Algorithm which
-relies heavily on `sparta` tables.
+relies heavily on `sparta` tables. See also
+<https://github.com/mlindsk/pednoa> for a usecase of `jti` where
+“ordinary/dense” table operations will fail.

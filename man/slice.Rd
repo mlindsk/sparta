@@ -46,4 +46,7 @@ get_val(sxa2, c(a = "a2", b = "b1", c = "c2"))
 sxa2_drop <- slice(sx, c(a = "a2"), drop = TRUE)
 get_val(sxa2_drop, c(b = "b1", c = "c2"))
 
+u <- sparta_unity_struct(dim_names(sx))
+slice(u, c(a = "a1"), drop = TRUE)
+
 }
