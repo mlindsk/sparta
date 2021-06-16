@@ -17,14 +17,16 @@ merge <- function(x, y, mult = TRUE) {
   }
 
   is_y_unity <- inherits(y, "sparta_unity")
-
-  dn1 <- attr(x, "dim_names")
-  dn2 <- attr(y, "dim_names")
-  dn  <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
+  dn1        <- attr(x, "dim_names")
+  dn2        <- attr(y, "dim_names")
+  dn         <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
 
   if (is_x_unity && is_y_unity) {
-    return(sparta_unity_struct(dn, attr(x, "rank") * attr(y, "rank")))
+    return(sparta_unity_struct(dn, if (mult) attr(x, "rank") * attr(y, "rank") else attr(x, "rank") / attr(y, "rank")))
   }
+
+  x_in_y <- all(names(x) %in% names(y))
+  y_in_x <- all(names(y) %in% names(x))
   
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {
@@ -34,6 +36,10 @@ merge <- function(x, y, mult = TRUE) {
       xdim <-.map_int(dim_names(x), length)
       merge_unity_(y, vals(y), names(y), names(x), xdim, attr(x, "rank"), ifelse(mult, FALSE, TRUE))
     }
+  } else if (x_in_y) {
+    merge_subset_(x, y, vals(x), vals(y), names(x), names(y), ifelse(mult, "*", "/"))
+  } else if (y_in_x){
+    merge_subset_(y, x, vals(y), vals(x), names(y), names(x), ifelse(mult, "*", "/"))
   } else {
     merge_(x, y, vals(x), vals(y), names(x), names(y), ifelse(mult, "*", "/"))
   }

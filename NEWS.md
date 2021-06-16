@@ -3,6 +3,7 @@
  * =marg= is now more efficient when =y= is =character(0)=
  * A =sparta_unity_struct= can now be sliced if =drop = TRUE=.
  * Better argument checks in =slice=
+ * =mult= and =div= is now faster when one of the tables is a subtale of the other. This is especially useful in connection with Bayesian networks and the Junction Tree Algorithm.
 
 # sparta v0.7.3 (2021-04-22)
 

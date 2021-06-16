@@ -67,13 +67,10 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #        SPARSE EXAMPLES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Rcpp::sourceCpp("../src/marginalize.cpp")
+# Rcpp::sourceCpp("../src/merge.cpp")
 
 # ndims <- 8L
 # nlvls <- 9L
-
-# ndims <- 6L
-# nlvls <- 10L
 
 # dims  <- rep(nlvls, ndims)
 # n     <- prod(dims)
@@ -100,17 +97,101 @@
 # )
 
 # sy <- as_sparta(y)
+# sx <- marg(sx, setdiff(names(sx), names(sx)[which(names(sx) %in% names(sy))]))
 
-# # a <- mult(sx, sy)
+# rm(x, y)
+# gc()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                 NEW MERGE 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Rcpp::sourceCpp("../src/merge.cpp")
 
-# microbenchmark::microbenchmark(
-#   m <- marginalize_sum_2(sx, vals(sx), names(sx), c("A", "C", "E")),
-#   times = 1
+# x <- array(
+#   c(4,7,0,9),
+#   dim = c(2,2),
+#   dimnames = list(
+#     b = c("b1", "b2"),
+#     c = c("c1", "c2")
+#   )
 # )
 
-# # 6.92Gb
+# y <- array(
+#   c(3,0,0,6,7,8,9,0),
+#   dim = c(2,2,2),
+#   dimnames = list(
+#     a = c("a1", "a2"),
+#     b = c("b1", "b2"),
+#     c = c("c1", "c2")
+#   )
+# )
+
+# sx <- as_sparta(x)
+# sy <- as_sparta(y)
 
 # microbenchmark::microbenchmark(
-#   m2 <- marginalize_sum_(sx, vals(sx), names(sx), c("A", "C", "E")),
-#   times = 1
+#   merge_(
+#     sx,
+#     sy,
+#     vals(sx),
+#     vals(sy),
+#     names(sx),
+#     names(sy)
+#   ),
+#   merge_subset_(
+#     sx,
+#     sy,
+#     vals(sx),
+#     vals(sy),
+#     names(sx),
+#     names(sy)
+#   ),
+#   times = 1000
+# )
+
+# m <- merge_(
+#   sx,
+#   sy,
+#   vals(sx),
+#   vals(sy),
+#   names(sx),
+#   names(sy)
+# )
+
+# ncol(m[[1]])
+# object.size(m)
+# rm(m); gc()
+
+# # 2.85 -> 
+# m1 <- merge_subset_(
+#   sx,
+#   sy,
+#   vals(sx),
+#   vals(sy),
+#   names(sx),
+#   names(sy)
+# )
+
+# ncol(m1[[1]]) # 27981238
+
+# object.size(m1) # 1119136624 bytes
+# rm(m1); gc()
+
+
+
+# merge_(
+#   sx,
+#   sy,
+#   vals(sx),
+#   vals(sy),
+#   names(sx),
+#   names(sy)
+# )
+
+# merge_subset_(
+#   sx,
+#   sy,
+#   vals(sx),
+#   vals(sy),
+#   names(sx),
+#   names(sy)
 # )

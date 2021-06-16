@@ -39,6 +39,21 @@ umap_str_int paste_cols(arma::Mat<short>& A) {
   return out;
 }
 
+umap_str_int paste_cols_from_index(arma::Mat<short>& A, arma::uvec& sep_idx) {
+  int N = A.n_cols;
+  umap_str_int out(N);
+  for (int i = 0; i < N; i++) {
+    arma::Col<short> v = A.col(i);
+    std::string s = std::to_string(v[sep_idx[0]]);
+    for (int i = 1; i < sep_idx.size(); i++) {
+      std::string es = std::to_string(v[sep_idx[i]]);
+      s += ":" + es;      
+    }
+    out[s].push_back(i);
+  }
+  return out;
+}
+
 umap_str_pair paste_marg(arma::Mat<short>& A, arma::uvec& row_idx, vec_dbl& xval) {
   std::size_t N = A.n_cols;
   umap_str_pair out;

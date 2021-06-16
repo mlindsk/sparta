@@ -22,10 +22,6 @@ check_fast:
 	Rscript -e "devtools::check(build_args = c('--no-build-vignettes'), args = c('--no-build-vignettes'))"
 
 install:
-	sudo Rscript -e "devtools::install()"
-
-
-install2:
 	cd ..; R CMD build sparta/; \
 	R CMD INSTALL sparta_0.7.3.9999.tar.gz
 

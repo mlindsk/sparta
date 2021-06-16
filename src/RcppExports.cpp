@@ -109,6 +109,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// merge_subset_
+Rcpp::List merge_subset_(arma::Mat<short>& x, arma::Mat<short>& y, vec_dbl& xval, vec_dbl& yval, vec_str xvar, vec_str yvar, std::string op);
+RcppExport SEXP _sparta_merge_subset_(SEXP xSEXP, SEXP ySEXP, SEXP xvalSEXP, SEXP yvalSEXP, SEXP xvarSEXP, SEXP yvarSEXP, SEXP opSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::Mat<short>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::Mat<short>& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< vec_dbl& >::type xval(xvalSEXP);
+    Rcpp::traits::input_parameter< vec_dbl& >::type yval(yvalSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type xvar(xvarSEXP);
+    Rcpp::traits::input_parameter< vec_str >::type yvar(yvarSEXP);
+    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
+    rcpp_result_gen = Rcpp::wrap(merge_subset_(x, y, xval, yval, xvar, yvar, op));
+    return rcpp_result_gen;
+END_RCPP
+}
 // slice_
 Rcpp::List slice_(arma::Mat<short>& x, vec_dbl& xval, Rcpp::List dim_names, vec_str slice_names, vec_str slice_cell);
 RcppExport SEXP _sparta_slice_(SEXP xSEXP, SEXP xvalSEXP, SEXP dim_namesSEXP, SEXP slice_namesSEXP, SEXP slice_cellSEXP) {
@@ -133,6 +150,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sparta_marginalize_max_", (DL_FUNC) &_sparta_marginalize_max_, 4},
     {"_sparta_merge_", (DL_FUNC) &_sparta_merge_, 7},
     {"_sparta_merge_unity_", (DL_FUNC) &_sparta_merge_unity_, 7},
+    {"_sparta_merge_subset_", (DL_FUNC) &_sparta_merge_subset_, 7},
     {"_sparta_slice_", (DL_FUNC) &_sparta_slice_, 5},
     {NULL, NULL, 0}
 };
