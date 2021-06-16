@@ -1,13 +1,13 @@
 # sparta v0.7.3.9999 (2021-06-15)
 
- * =marg= is now more efficient when =y= is =character(0)=
- * A =sparta_unity_struct= can now be sliced if =drop = TRUE=.
- * Better argument checks in =slice=
- * =mult= and =div= is now faster when one of the tables is a subtale of the other. This is especially useful in connection with Bayesian networks and the Junction Tree Algorithm.
+ * `marg` is now more efficient when `y` is `character(0)`
+ * A `sparta_unity_struct` can now be sliced if `drop ` TRUE=.
+ * Better argument checks in `slice`
+ * `mult` and `div` is now faster when one of the tables is a subtale of the other. This is especially useful in connection with Bayesian networks and the Junction Tree Algorithm.
 
 # sparta v0.7.3 (2021-04-22)
 
- * Bug fixed when argument =drop= is =TRUE= in =slice= for tables that should reduce to one row.
+ * Bug fixed when argument `drop` is `TRUE` in `slice` for tables that should reduce to one row.
 
 # sparta v0.7.2 (2021-04-03)
  * The new print method turned out to cause problems in the long run. Printing a sparse table now prints columns as rows again with the corresponding value attached to the right.
@@ -18,9 +18,9 @@
  * Multiplication of unity tables was not correct due to the new rank argument. The fix was to multiply the rank of the tables.
  * Print method changed to print cells as columns which is also how the sparse tables are represented under the hood.
  * New functions (see documentation):
-   + =sparsity=: determines the ratio of non-zero cells and the size of the statespace.
-   + =as_df=: convert a sparse table to a =data.frame=. Either with or without zero cells
-   + =get_values=: The same as the existing =vals=
+   + `sparsity`: determines the ratio of non-zero cells and the size of the statespace.
+   + `as_df`: convert a sparse table to a `data.frame`. Either with or without zero cells
+   + `get_values`: The same as the existing `vals`
 
 # sparta v0.7.0 (2020-12-16)
 
