@@ -29,6 +29,10 @@ merge_unity_ <- function(x, xval, xvar, yvar, ydim, rank = 1, reciprocal = FALSE
     .Call(`_sparta_merge_unity_`, x, xval, xvar, yvar, ydim, rank, reciprocal)
 }
 
+merge_subset_ <- function(x, y, xval, yval, xvar, yvar, op = "*") {
+    .Call(`_sparta_merge_subset_`, x, y, xval, yval, xvar, yvar, op)
+}
+
 slice_ <- function(x, xval, dim_names, slice_names, slice_cell) {
     .Call(`_sparta_slice_`, x, xval, dim_names, slice_names, slice_cell)
 }

@@ -104,12 +104,9 @@ Rcpp::List merge_(
   arma::uvec arma_rowidx_sep_x = conv_to<arma::uvec>::from(rowidx_sep_x);
   arma::uvec arma_rowidx_sep_y = conv_to<arma::uvec>::from(rowidx_sep_y);
   arma::uvec arma_rowidx_res_y = conv_to<arma::uvec>::from(rowidx_res_y);
-  
-  arma::Mat<short> x_sub_sep = x.rows(arma_rowidx_sep_x);
-  arma::Mat<short> y_sub_sep = y.rows(arma_rowidx_sep_y);
 
-  umap_str_int x_sep_idx_map = paste_cols(x_sub_sep);
-  umap_str_int y_sep_idx_map = paste_cols(y_sub_sep);
+  umap_str_int x_sep_idx_map = paste_cols_from_index(x, arma_rowidx_sep_x);
+  umap_str_int y_sep_idx_map = paste_cols_from_index(y, arma_rowidx_sep_y);
   
   // Find the total number of columns in the final sparse matrix
   std::size_t n_cols_out = 0;
@@ -235,4 +232,72 @@ Rcpp::List merge_unity_(
   vec_str dim_names = xvar;
   dim_names.insert(dim_names.end(), names_res.begin(), names_res.end());
   return Rcpp::List::create(out_mat, out_val, dim_names);
+}
+
+
+// [[Rcpp::export]]
+Rcpp::List merge_subset_(
+  arma::Mat<short>& x,
+  arma::Mat<short>& y,
+  vec_dbl& xval,
+  vec_dbl& yval,
+  vec_str xvar,
+  vec_str yvar,
+  std::string op = "*"
+  )
+{
+
+  // NOTE: xvar _must_ be a subset of yvar
+  bool x_in_y = set_issubeq(xvar, yvar);
+  if (!x_in_y) Rcpp::stop("xvar must be a subset of yvar");
+
+  int n_xvar = xvar.size();
+  vec_int rowidx_sep_y(n_xvar);
+  for (int i = 0; i < n_xvar; i++) {
+    auto ity = std::find(yvar.begin(), yvar.end(), xvar[i]);
+    int idxy = std::distance(yvar.begin(), ity);
+    rowidx_sep_y[i] = idxy;
+  }
+  
+  arma::uvec arma_rowidx_sep_y = conv_to<arma::uvec>::from(rowidx_sep_y);
+  umap_str_int x_sep_idx_map = paste_cols(x);
+  umap_str_int y_sep_idx_map = paste_cols_from_index(y, arma_rowidx_sep_y);
+
+  // Find the total number of columns in the final sparse matrix
+  std::size_t n_cols_out = 0;
+  
+  for (auto & e : x_sep_idx_map) {
+    auto key = e.first;
+    auto key_in_y_sep = y_sep_idx_map.find(key);
+    if (key_in_y_sep != y_sep_idx_map.end()) {
+      n_cols_out +=e.second.size() * y_sep_idx_map[key].size();
+    }
+  }
+
+  arma::uvec keepers(n_cols_out);
+  vec_dbl yv(n_cols_out);
+  std::size_t counter = 0;
+  
+  for (auto & xk : x_sep_idx_map) {
+    auto xkey = xk.first;
+    auto xkey_in_y = y_sep_idx_map.find(xkey);
+    
+    if (xkey_in_y != y_sep_idx_map.end()) {
+      // The two vectors of column indices for which we must multiply all combinations
+      vec_int& idx_x = xk.second;
+      vec_int& idx_y = y_sep_idx_map[xkey];
+
+      for (auto & ix : idx_x) {
+	for (auto & iy : idx_y) {
+	  yval[iy] = op == "*" ? yval[iy] * xval[ix] : yval[iy] / xval[ix];
+	  yv[counter] = yval[iy];
+	  keepers[counter] = iy;
+	  counter += 1;	  
+	}
+      }
+    }
+  }
+
+  arma::Mat<short> yout = y.cols(keepers);
+  return Rcpp::List::create(yout, yv, yvar);
 }
