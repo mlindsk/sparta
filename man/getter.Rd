@@ -8,6 +8,8 @@
 \alias{dim_names}
 \alias{dim_names.sparta}
 \alias{names.sparta}
+\alias{sparta_rank}
+\alias{sparta_rank.sparta_unity}
 \title{Sparta getters}
 \usage{
 vals(x)
@@ -23,6 +25,10 @@ dim_names(x)
 \method{dim_names}{sparta}(x)
 
 \method{names}{sparta}(x)
+
+sparta_rank(x)
+
+\method{sparta_rank}{sparta_unity}(x)
 }
 \arguments{
 \item{x}{sparta object}

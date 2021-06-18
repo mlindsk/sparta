@@ -9,7 +9,7 @@ merge <- function(x, y, mult = TRUE) {
   
   if (is_y_scalar) {
     if (is_x_unity) {
-      attr(x, "rank") <- attr(x, "rank") * y
+      attr(x, "vals") <- attr(x, "vals") * y
       return(x)
     }
     attr(x, "vals") <- if (mult) attr(x, "vals") * y else attr(x, "vals") / y
@@ -22,7 +22,7 @@ merge <- function(x, y, mult = TRUE) {
   dn         <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
 
   if (is_x_unity && is_y_unity) {
-    return(sparta_unity_struct(dn, if (mult) attr(x, "rank") * attr(y, "rank") else attr(x, "rank") / attr(y, "rank")))
+    return(sparta_unity_struct(dn, if (mult) attr(x, "vals") * attr(y, "vals") else attr(x, "vals") / attr(y, "vals")))
   }
 
   x_in_y <- all(names(x) %in% names(y))
@@ -31,10 +31,10 @@ merge <- function(x, y, mult = TRUE) {
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {
       ydim <- .map_int(dim_names(y), length)
-      merge_unity_(x, vals(x), names(x), names(y), ydim, attr(y, "rank"))
+      merge_unity_(x, vals(x), names(x), names(y), ydim, attr(y, "vals"))
     } else if (!is_y_unity && is_x_unity) {
       xdim <-.map_int(dim_names(x), length)
-      merge_unity_(y, vals(y), names(y), names(x), xdim, attr(x, "rank"), ifelse(mult, FALSE, TRUE))
+      merge_unity_(y, vals(y), names(y), names(x), xdim, attr(x, "vals"), ifelse(mult, FALSE, TRUE))
     }
   } else if (x_in_y) {
     merge_subset_(x, y, vals(x), vals(y), names(x), names(y), ifelse(mult, "*", "/"))
@@ -84,9 +84,11 @@ merge <- function(x, y, mult = TRUE) {
 #' sx <- as_sparta(x)
 #' sy <- as_sparta(y)
 #'
+#' sparsity(sx)
+#' table_size(sx)
 #' dim_names(sx)
-#' dim_names(sy)
-#'
+#' names(sx)
+#' 
 #' mult(sx, sy)
 #' div(sy, sx)
 #'
@@ -102,22 +104,25 @@ merge <- function(x, y, mult = TRUE) {
 #' ds2  <- as_sparta(d2)
 #'
 #' mult(ds1, ds2)
-#' div(ds1, ds2)
 #'
 #' # ----------
 #' # Example 3)
 #' # ----------
 #'
-#' su <- sparta_unity_struct(dim_names(sy), rank = 1)
-#' mult(sx, su)
-#' div(su, sx)
+#' su <- sparta_unity_struct(dim_names(sy), rank = 3.1415)
+#' sparta_rank(su)
+#' sum(su)
+#' sun <- normalize(su)
+#' sun
+#' sum(sun)
 #'
+#' mult(sx, sun)
+#' 
 #' # ----------
 #' # Example 4)
 #' # ----------
 #' so <- sparta_ones(dim_names(sx))
 #' mult(so, 2)
-#' div(so, -2)
 
 #' @rdname merge
 #' @export
@@ -200,7 +205,7 @@ div.numeric <- function(x, y) {
 #' sx <- as_sparta(x)
 #' marg(sx, c("c"))
 #'
-#' su <- sparta_unity_struct(dim_names(sx), rank = 1.5)
+#' su <- sparta_unity_struct(dim_names(sx), rank = 3.14)
 #' marg(su, c("a", "b"))
 #' @export
 marg <- function(x, y, flow = "sum") UseMethod("marg")
@@ -213,7 +218,9 @@ marg.sparta <- function(x, y, flow = "sum") {
   
   if (inherits(x, "sparta_unity")) {
     dny <- dim_names(x)[y]
-    attr(x, "rank") <- attr(x, "rank") * prod(.map_dbl(dny, length))
+    attr(x, "vals") <- attr(x, "vals") * prod(.map_dbl(dny, length))
+
+    attr(x, "dim_names") <- dim_names(x)[setdiff(names(x), names(dny))]
     return(x)
   }
 
@@ -302,7 +309,7 @@ slice.sparta <- function(x, s, drop = FALSE) {
   if (inherits(x, "sparta_unity")) {
     if (drop == TRUE) {
       dn_new <- dim_names(x)[setdiff(names(x), names(s))]
-      return(sparta_unity_struct(dn_new, rank = attr(x, "rank")))
+      return(sparta_unity_struct(dn_new, rank = attr(x, "vals")))
     } else {
       stop(
         "A sparta_unity cannot be sliced ",

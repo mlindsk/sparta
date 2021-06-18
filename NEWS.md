@@ -1,9 +1,12 @@
-# sparta v0.7.3.9999 (2021-06-15)
+# sparta v0.8.0 (2021-06-18)
 
  * `marg` is now more efficient when `y` is `character(0)`
  * A `sparta_unity_struct` can now be sliced if `drop ` TRUE=.
  * Better argument checks in `slice`
  * `mult` and `div` is now faster when one of the tables is a subtale of the other. This is especially useful in connection with Bayesian networks and the Junction Tree Algorithm.
+ * `sum, normalize, get_vals` and `vals` now works as expected on `sparta_unity` class
+ * New functions: `sparta_rank` and `table_size`
+ * `as_array` now works for `sparta_unity`
 
 # sparta v0.7.3 (2021-04-22)
 

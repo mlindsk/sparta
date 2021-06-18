@@ -35,10 +35,10 @@ sparta_ones <- function(dim_names) {
 #' mult(s, 2)
 #' @export
 sparta_unity_struct <- function(dim_names, rank = 1L) {
+  stopifnot(is_scalar(rank))
   structure(
     matrix(nrow = 0L, ncol = 0L),
-    vals = vector("numeric", length = 0L),
-    rank = rank,
+    vals = rank, # vector("numeric", length = 0L),
     dim_names = dim_names,
     class = c("sparta_unity", "sparta", "matrix")
   )
@@ -122,7 +122,7 @@ get_val.sparta <- function(x, y) {
   idx       <- mapply(match, y, x_dim_names)
   
   if (anyNA(idx)) stop("some values of y are not valid.", call. = FALSE)
-  if (inherits(x, "sparta_unity")) return(1L)
+  if (inherits(x, "sparta_unity")) attr(x, "vals")
   
   idx_str   <- paste0(idx, collapse = "")
   idx_x     <- apply(x, 2L, paste0, collapse = "")
@@ -176,6 +176,36 @@ sparsity <- function(x) UseMethod("sparsity")
 #' @export
 sparsity.sparta <- function(x) 1 - ncol(x) / prod(.map_int(sparta::dim_names(x), length))
 
+#' @rdname sparsity
+#' @export
+sparsity.sparta_unity <- function(x) 0L
+
+
+#' Number of elements in a table
+
+#' @param x sparta
+#' @return The size of the sparta table \code{x}
+#' @examples
+#'
+#' x <- array(
+#'   c(1,0,0,2,3,4,0,0),
+#'   dim = c(2,2,2),
+#'   dimnames = list(
+#'     a = c("a1", "a2"),
+#'     b = c("b1", "b2"),
+#'     c = c("c1", "c2")
+#'   )
+#' )
+#'
+#' sx <- as_sparta(x)
+#' table_size(sx)
+#' @export
+table_size <- function(x) UseMethod("table_size")
+
+#' @rdname table_size
+#' @export
+table_size.sparta <- function(x) prod(.map_int(sparta::dim_names(x), length))
+
 #' Normalize
 
 #' @param x sparta
@@ -200,10 +230,11 @@ normalize <- function(x) UseMethod("normalize")
 #' @rdname normalize
 #' @export
 normalize.sparta <- function(x) {
-  if (inherits(x, "sparta_unity")) {
-    stop("a sparta_unity cannot be normalize. see 'sparta_ones'")
+  if (!inherits(x, "sparta_unity")) {
+    attr(x, "vals") <- attr(x, "vals") / sum(attr(x, "vals"))
+  } else {
+    attr(x, "vals") <- 1 / table_size(x)
   }
-  attr(x, "vals") <- attr(x, "vals") / sum(attr(x, "vals"))
   x
 }
 
@@ -257,7 +288,6 @@ equiv.sparta <- function(x, y) {
   }))
 }
 
-
 #' Sparta getters
 #'
 #' Getter methods for sparta objects
@@ -291,6 +321,13 @@ dim_names.sparta <- function(x) attr(x, "dim_names")
 #' @export
 names.sparta <- function(x) names(attr(x, "dim_names"))
 
+#' @rdname getter
+#' @export
+sparta_rank <- function(x) UseMethod("sparta_rank")
+
+#' @rdname getter
+#' @export
+sparta_rank.sparta_unity <- function(x) attr(x, "vals")
 
 #' Vector-like operations on sparta objects
 
@@ -301,23 +338,20 @@ names.sparta <- function(x) names(attr(x, "dim_names"))
 #' @export
 sum.sparta <- function(x, ...) {
   if (inherits(x, "sparta_unity")) {
-    ncells <- .map_int(dim_names(x), length)
-    return(prod(ncells))
+    return(table_size(x) * sparta_rank(x))
   }
-  sum(attr(x, "vals"))
+  sum(attr(x, "vals"))  
 }
 
 #' @rdname vec-ops
 #' @export
 max.sparta <- function(x, ...) {
-  if (inherits(x, "sparta_unity")) return(1L)
   max(attr(x, "vals"))
 }
 
 #' @rdname vec-ops
 #' @export
 min.sparta <- function(x, ...) {
-  if (inherits(x, "sparta_unity")) return(1L)
   min(attr(x, "vals"))
 }
 
@@ -346,7 +380,7 @@ which_min_idx <- function(x) UseMethod("which_min_idx")
 #' @rdname vec-ops
 #' @export
 which_min_idx.sparta <- function(x) {
-  if (inherits(x, "sparta_unity")) return(1L)
+  if (inherits(x, "sparta_unity")) return(NA)
   which.min(attr(x, "vals"))
 }
 
@@ -375,7 +409,7 @@ which_max_idx <- function(x) UseMethod("which_max_idx")
 #' @rdname vec-ops
 #' @export
 which_max_idx.sparta <- function(x) {
-  if (inherits(x, "sparta_unity")) return(1L)
+  if (inherits(x, "sparta_unity")) return(NA)
   which.max(attr(x, "vals"))
 }
 
@@ -389,7 +423,7 @@ which_max_idx.sparta <- function(x) {
 print.sparta <- function(x, ...) {
   if (inherits(x, "sparta_unity")) {
     cat(" <sparta_unity>\n")
-    cat("  rank:", attr(x, "rank"), "\n")
+    cat("  rank:", attr(x, "vals"), "\n")
     cat("  variables:", paste(names(x), collapse = ", "), "\n")
   } else {
     d <- as.data.frame(t(x))

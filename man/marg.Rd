@@ -37,6 +37,6 @@ x <- array(
 sx <- as_sparta(x)
 marg(sx, c("c"))
 
-su <- sparta_unity_struct(dim_names(sx), rank = 1.5)
+su <- sparta_unity_struct(dim_names(sx), rank = 3.14)
 marg(su, c("a", "b"))
 }

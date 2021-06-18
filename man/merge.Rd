@@ -64,8 +64,10 @@ y <- array(
 sx <- as_sparta(x)
 sy <- as_sparta(y)
 
+sparsity(sx)
+table_size(sx)
 dim_names(sx)
-dim_names(sy)
+names(sx)
 
 mult(sx, sy)
 div(sy, sx)
@@ -82,20 +84,23 @@ ds1  <- as_sparta(d1)
 ds2  <- as_sparta(d2)
 
 mult(ds1, ds2)
-div(ds1, ds2)
 
 # ----------
 # Example 3)
 # ----------
 
-su <- sparta_unity_struct(dim_names(sy), rank = 1)
-mult(sx, su)
-div(su, sx)
+su <- sparta_unity_struct(dim_names(sy), rank = 3.1415)
+sparta_rank(su)
+sum(su)
+sun <- normalize(su)
+sun
+sum(sun)
+
+mult(sx, sun)
 
 # ----------
 # Example 4)
 # ----------
 so <- sparta_ones(dim_names(sx))
 mult(so, 2)
-div(so, -2)
 }

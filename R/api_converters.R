@@ -102,6 +102,13 @@ as_array.sparta <- function(x) {
   arr
 }
 
+#' @rdname as_array
+#' @export
+as_array.sparta_unity <- function(x) {
+  dim_ <- .map_int(attr(x, "dim_names"), function(z) length(z))
+  array(sparta_rank(x), dim = dim_, dimnames = attr(x, "dim_names"))
+}
+
 
 #' As data frame
 #'

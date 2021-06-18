@@ -3,11 +3,14 @@
 \name{as_array}
 \alias{as_array}
 \alias{as_array.sparta}
+\alias{as_array.sparta_unity}
 \title{As array}
 \usage{
 as_array(x)
 
 \method{as_array}{sparta}(x)
+
+\method{as_array}{sparta_unity}(x)
 }
 \arguments{
 \item{x}{sparta object}

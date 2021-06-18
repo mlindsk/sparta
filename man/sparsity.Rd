@@ -3,11 +3,14 @@
 \name{sparsity}
 \alias{sparsity}
 \alias{sparsity.sparta}
+\alias{sparsity.sparta_unity}
 \title{Sparsity}
 \usage{
 sparsity(x)
 
 \method{sparsity}{sparta}(x)
+
+\method{sparsity}{sparta_unity}(x)
 }
 \arguments{
 \item{x}{sparta}
