@@ -27,6 +27,9 @@ merge <- function(x, y, mult = TRUE) {
 
   x_in_y <- all(names(x) %in% names(y))
   y_in_x <- all(names(y) %in% names(x))
+
+  # TODO: Implement merge_unity_subset_
+  # easy: sparta::mult(tab, sparta_rank(sub_tab))
   
   m <- if (is_x_unity || is_y_unity) {
     if (is_y_unity && !is_x_unity) {

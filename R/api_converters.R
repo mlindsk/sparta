@@ -56,17 +56,40 @@ as_sparta.table <- as_sparta.array
 #' @export
 as_sparta.sparta <- function(x) x
 
+# #' @rdname as_sparta
+# #' @export
+# as_sparta.data.frame <- function(x) {
+#   if (!all(lapply(x, class) == "character")) {
+#      stop("all varibles must be of class 'character'", call. = FALSE)
+#   }
+#   # aggregate(rep(1L, nrow(x)) ~ gear + carb, FUN = sum, data = x)
+#   # aggregate(make_form(colnames(derma)[1:8]), data = derma[, 1:8], FUN = sum)
+#   # TODO: TRY IT OUT FOR LARGE DATASETS! JUST rbind derma a couple of times
+#   as_sparta(table(x, dnn = colnames(x)))
+# }
+
 #' @rdname as_sparta
 #' @export
 as_sparta.data.frame <- function(x) {
   if (!all(lapply(x, class) == "character")) {
      stop("all varibles must be of class 'character'", call. = FALSE)
   }
-  # aggregate(rep(1L, nrow(x)) ~ gear + carb, FUN = sum, data = x)
-  # aggregate(make_form(colnames(derma)[1:8]), data = derma[, 1:8], FUN = sum)
-  # TODO: TRY IT OUT FOR LARGE DATASETS! JUST rbind derma a couple of times
-  as_sparta(table(x, dnn = colnames(x)))
+
+  dim_names <- lapply(x, unique)
+  tab <- table(apply(x, 1L, paste, collapse = ":"))
+  cells_chr <- strsplit(names(tab), ":")
+  cells <- lapply(cells_chr, function(cell) {
+    unname(mapply(function(a,b) {match(a,b)}, cell, dim_names))
+  })
+
+  sparta_struct(
+    x    = matrix(unlist(cells), nrow = length(dim_names)),
+    vals = as.numeric(unname(tab)),
+    dim_names = dim_names
+  )
 }
+
+
 
 #' As array
 #'
