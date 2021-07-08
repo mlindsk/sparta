@@ -1,8 +1,8 @@
 Package: sparta
 Type: Package
 Title: Sparse Tables
-Version: 0.8.0.9999
-Date: 2021-06-15
+Version: 0.8.1
+Date: 2021-07-05
 Authors@R: 
   c(person(given = "Mads",
            family = "Lindskou",

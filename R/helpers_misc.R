@@ -16,6 +16,11 @@
   vapply(X = x, FUN = fun, FUN.VALUE = double(1), ...)
 }
 
+.map_lgl <- function(x, fun, ...) {
+  vapply(X = x, FUN = fun, FUN.VALUE = logical(1), ...)
+}
+
+
 # SETS
 # ----
 eq_empt_chr <- function(x) identical(x, character(0))

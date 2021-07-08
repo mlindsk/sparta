@@ -56,23 +56,13 @@ as_sparta.table <- as_sparta.array
 #' @export
 as_sparta.sparta <- function(x) x
 
-# #' @rdname as_sparta
-# #' @export
-# as_sparta.data.frame <- function(x) {
-#   if (!all(lapply(x, class) == "character")) {
-#      stop("all varibles must be of class 'character'", call. = FALSE)
-#   }
-#   # aggregate(rep(1L, nrow(x)) ~ gear + carb, FUN = sum, data = x)
-#   # aggregate(make_form(colnames(derma)[1:8]), data = derma[, 1:8], FUN = sum)
-#   # TODO: TRY IT OUT FOR LARGE DATASETS! JUST rbind derma a couple of times
-#   as_sparta(table(x, dnn = colnames(x)))
-# }
 
 #' @rdname as_sparta
 #' @export
 as_sparta.data.frame <- function(x) {
-  if (!all(lapply(x, class) == "character")) {
-     stop("all varibles must be of class 'character'", call. = FALSE)
+  # TODO: Allow factors, but just convert them to chars then
+  if (!all(.map_lgl(x, inherits, what = c("character", "factor")))) {
+     stop("All varibles must be either 'character' or 'factor'", call. = FALSE)
   }
 
   dim_names <- lapply(x, unique)
@@ -88,8 +78,6 @@ as_sparta.data.frame <- function(x) {
     dim_names = dim_names
   )
 }
-
-
 
 #' As array
 #'
