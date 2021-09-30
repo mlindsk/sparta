@@ -1,3 +1,8 @@
+# sparta v0.8.1.1 (2021-09-30)
+
+ * Bug fixed when mult/div two unities
+ * Bug fixed when calling `div(x,y)` with `x` being a scalar. The result was the same as `div(y,x)`.
+
 # sparta v0.8.1 (2021-07-05)
 
  * `as_sparta.data.frame` does no longer convert to an array first (expensive) and is therfore much more efficient now.

@@ -131,3 +131,30 @@ expect_identical(
   mult(2, sx),
   mult(sx, 2)
 )
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  multiplication and division of two unities
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+r1 <- 0.3
+r2 <- 0.6
+u1 <- sparta_unity_struct(dim_names(sx), r1)
+u2 <- sparta_unity_struct(dim_names(sy), r2)
+dn1 <- attr(u1, "dim_names")
+dn2 <- attr(u2, "dim_names")
+dn  <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
+
+expect_identical(
+  sparta_unity_struct(dn, r1*r2),
+  mult(u1,u2)
+)
+
+expect_identical(
+  sparta_unity_struct(dn, r1/r2),
+  div(u1, u2)
+)
+
+# reverting u1 and u2 permnutes the dim names
+expect_equal(
+  list(dim_names(sparta_unity_struct(dn, r2/r1)), sparta_rank(sparta_unity_struct(dn, r2/r1))),
+  list(dim_names(div(u2, u1))[names(sparta_unity_struct(dn, r2/r1))], sparta_rank(div(u2, u1)))
+)

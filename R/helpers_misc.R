@@ -23,6 +23,8 @@
 
 # SETS
 # ----
+neq_null <- function(x) !is.null(x)
+
 eq_empt_chr <- function(x) identical(x, character(0))
 '%ni%' <- Negate('%in%')
 

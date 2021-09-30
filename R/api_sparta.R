@@ -8,11 +8,11 @@ merge <- function(x, y, mult = TRUE) {
   is_x_unity  <- inherits(x, "sparta_unity")
   
   if (is_y_scalar) {
-    if (is_x_unity) {
-      attr(x, "vals") <- attr(x, "vals") * y
-      return(x)
+    attr(x, "vals") <- if (mult) {
+      attr(x, "vals") * y 
+    } else {
+      if (neq_null(attr(y, "reciproc"))) y / attr(x, "vals") else attr(x, "vals") / y
     }
-    attr(x, "vals") <- if (mult) attr(x, "vals") * y else attr(x, "vals") / y
     return(x)
   }
 
@@ -22,7 +22,10 @@ merge <- function(x, y, mult = TRUE) {
   dn         <- c(dn1, dn2[setdiff(names(dn2), names(dn1))])
 
   if (is_x_unity && is_y_unity) {
-    return(sparta_unity_struct(dn, if (mult) attr(x, "vals") * attr(y, "vals") else attr(x, "vals") / attr(y, "vals")))
+    return(
+      sparta_unity_struct(dn,
+        if (mult) attr(x, "vals") * attr(y, "vals") else attr(x, "vals") / attr(y, "vals")
+      ))
   }
 
   x_in_y <- all(names(x) %in% names(y))
@@ -180,7 +183,7 @@ div.numeric <- function(x, y) {
   if (!is_scalar(x)) stop("x must be of class 'sparta' or a scalar", call. = FALSE)
   if (is_scalar(y)) return(x / y)
   if (inherits(y, "sparta")) {
-    merge(y, x, FALSE)
+    merge(y, structure(x, reciproc = TRUE), FALSE)
   }
 }
 

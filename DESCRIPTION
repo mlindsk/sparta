@@ -1,8 +1,8 @@
 Package: sparta
 Type: Package
 Title: Sparse Tables
-Version: 0.8.1
-Date: 2021-07-05
+Version: 0.8.1.1
+Date: 2021-09-30
 Authors@R: 
   c(person(given = "Mads",
            family = "Lindskou",
@@ -17,7 +17,7 @@ LinkingTo: Rcpp, RcppArmadillo
 SystemRequirements: C++11
 ByteCompile: Yes
 NeedsCompilation: Yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: tinytest
 URL: https://github.com/mlindsk/sparta
 BugReports: https://github.com/mlindsk/sparta/issues
