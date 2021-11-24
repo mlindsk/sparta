@@ -192,7 +192,7 @@ div.numeric <- function(x, y) {
 #'
 #' Marginalize a sparse table given a vector of variables to marginalize out
 #' 
-#' @param x sparta object
+#' @param x sparta object or a numeric. If numeric, the value is just returned.
 #' @param y character vector of the variables to marginalize out
 #' @param flow either "sum" or "max"
 #' @return A sparta object (or scalar if all variables are summed out)
@@ -254,6 +254,9 @@ marg.sparta <- function(x, y, flow = "sum") {
   )
 }
 
+#' @rdname marg
+#' @export
+marg.numeric <- function(x, y, flow = "sum") x
 
 #' Slice
 #'

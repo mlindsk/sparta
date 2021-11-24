@@ -1,7 +1,8 @@
-# sparta v0.8.1.1 (2021-09-30)
+# sparta v0.8.2 (2021-11-24)
 
  * Bug fixed when mult/div two unities
  * Bug fixed when calling `div(x,y)` with `x` being a scalar. The result was the same as `div(y,x)`.
+ * `numerics` can now be marginalized. The result is the numeric itself.
 
 # sparta v0.8.1 (2021-07-05)
 

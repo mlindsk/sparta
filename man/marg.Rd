@@ -3,14 +3,17 @@
 \name{marg}
 \alias{marg}
 \alias{marg.sparta}
+\alias{marg.numeric}
 \title{Marginalization of sparse tables}
 \usage{
 marg(x, y, flow = "sum")
 
 \method{marg}{sparta}(x, y, flow = "sum")
+
+\method{marg}{numeric}(x, y, flow = "sum")
 }
 \arguments{
-\item{x}{sparta object}
+\item{x}{sparta object or a numeric. If numeric, the value is just returned.}
 
 \item{y}{character vector of the variables to marginalize out}
 
