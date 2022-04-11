@@ -17,6 +17,6 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Mads Lindskou \email{mads@math.aau.dk}
+\strong{Maintainer}: Mads Lindskou \email{madslindskou@gmail.com}
 
 }

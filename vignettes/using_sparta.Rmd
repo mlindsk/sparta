@@ -1,0 +1,114 @@
+---
+title: "Using sparta"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{using_sparta}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+A probability mass function can be represented by a multi-dimensional array.  However, for
+high-dimensional distributions where each variable may have a large
+state space, lack of computer memory can become a problem. For
+example, an $80$-dimensional random vector in which each variable
+has $10$ levels will lead to a state space with $10^{80}$ cells. Such
+a distribution can not be stored in a computer; in fact, $10^{80}$ is
+one of the estimates of the number of atoms in the universe. However,
+if the array consists of only a few non-zero values, we need only store
+these values along with information about their location. That is, a sparse representation of a table. Sparta was created for efficient multiplication and marginalization of sparse tables.
+
+# How to use sparta
+
+```{r setup}
+library(sparta)
+```
+
+Consider two arrays `f` and `g`:
+
+```{r}
+dn <- function(x) setNames(lapply(x, paste0, 1:2), toupper(x))
+d  <- c(2, 2, 2)
+f  <- array(c(5, 4, 0, 7, 0, 9, 0, 0), d, dn(c("x", "y", "z")))
+g  <- array(c(7, 6, 0, 6, 0, 0, 9, 0), d, dn(c("y", "z", "w")))
+```
+
+with flat layouts
+
+```{r}
+ftable(f, row.vars = "X")
+ftable(g, row.vars = "W")
+```
+
+We can convert these to their equivalent **sparta** versions as
+
+```{r}
+sf <- as_sparta(f); sg <- as_sparta(g)
+```
+
+Printing the object by the default printing method yields
+
+```{r}
+print.default(sf)
+```
+
+The columns are the cells in the sparse matrix and the `vals` attribute are the corresponding values which can be extracted with the `vals` function. Furthermore, the domain resides in the `dim_names` attribute, which can also be extracted using the `dim_names` function. From the output, we see that (`x2`, `y2`, `z1`) has a value of $2$. Using the **sparta** print method prettifies things:
+
+```{r}
+print(sf)
+```
+
+where row $i$ corresponds to column $i$ in the sparse matrix. The product of `sf` and `sg` 
+
+```{r}
+mfg <- mult(sf, sg); mfg
+```
+Converting `sf` into a conditional probability table (CPT) with conditioning variable `Z`:
+
+```{r}
+sf_cpt <- as_cpt(sf, y = "Z"); sf_cpt
+```
+
+Slicing `sf` on `X1 = x1` and dropping the `X` dimension
+
+```{r}
+slice(sf, s = c(X = "x1"), drop = TRUE)
+```
+
+reduces `sf` to a single non-zero element, whereas the equivalent dense case would result in a `(Y,Z)` table with one non-zero element and three zero-elements.
+
+Marginalizing (or summing) out `Y` in `sg` yields
+
+```{r}
+marg(sg, y = c("Y"))
+```
+
+Finally, we mention that a sparse table can be created using the constructor `sparta_struct`, which can be necessary to use if the corresponding dense table is too large to have in memory.
+
+
+# Functionalities in sparta
+
+| Function name            | Description                                                        |
+|:-------------------------|:-------------------------------------------------------------------|
+| `as_<sparta>`            | Convert \code{array}-like object to a `sparta`                     |
+| `as_<array/df/cpt>`      | Convert `sparta` object to an `array/data.frame/CPT`               |
+| `sparta_struct`          | Constructor for `sparta` objects                                   |
+| `mult, div, marg, slice` | Multiply/divide/marginalize/slice                                  |
+| `normalize`              | Normalize (the values of the result sum to one)                    |
+| `get_val`                | Extract the value for a specific named cell                        |
+| `get_cell_name`          | Extract the named cell                                             |
+| `get_values`             | Extract the values                                                 |
+| `dim_names`              | Extract the domain                                                 |
+| `names`                  | Extract the variable names                                         |
+| `max/min`                | The maximum/minimum value                                          |
+| `which_<max/min>_cell`   | The column index referring to the max/min value                    |
+| `which_<max/min>_idx`    | The configuration corresponding to the max/min value               |
+| `sum`                    | Sum the values                                                     |
+| `equiv`                  | Test if two tables are identical up to permutations of the columns |
+|                          |                                                                    |

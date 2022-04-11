@@ -238,6 +238,9 @@ normalize.sparta <- function(x) {
   x
 }
 
+#' @rdname normalize
+#' @export
+normalize.numeric <- function(x) 1L
 
 #' Equiv
 #'
@@ -429,7 +432,7 @@ print.sparta <- function(x, ...) {
     d <- as.data.frame(t(x))
     colnames(d) <- names(x)
     d[["val"]] <- round(vals(x), 3)
-    print(d)
+    print(d, ...)
   }
 }
 

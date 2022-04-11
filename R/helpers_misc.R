@@ -31,8 +31,9 @@ eq_empt_chr <- function(x) identical(x, character(0))
 # ASSERTERS
 # ---------
 is_scalar <- function(x) {
-  is.atomic(x) && length(x) == 1L && (class(x) == "numeric" || class(x) == "integer")
+  is.atomic(x) && length(x) == 1L && (inherits(x, "numeric") || inherits(x, "integer"))
 }
+
 
 is_non_empty_vector_chr <- function(x) {
   is.vector(x, mode = "character") && length(x) > 0L

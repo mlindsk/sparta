@@ -3,11 +3,14 @@
 \name{normalize}
 \alias{normalize}
 \alias{normalize.sparta}
+\alias{normalize.numeric}
 \title{Normalize}
 \usage{
 normalize(x)
 
 \method{normalize}{sparta}(x)
+
+\method{normalize}{numeric}(x)
 }
 \arguments{
 \item{x}{sparta}
